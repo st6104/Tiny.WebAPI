@@ -1,0 +1,32 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using Tiny.Application.ViewModels;
+using Tiny.Domain.AggregateModels.GLAccountAggregate;
+
+namespace Tiny.Application.ViewModelExtensions;
+
+internal static class DomainToViewModelExtension
+{
+    public static Task<GLAccountViewModel> ToViewModel(this Task<GLAccount> entityTask)
+    {
+        return Task.Run(async () =>
+        {
+            var entity = await entityTask;
+            return ToViewModelCore(entity);
+        });
+    }
+
+    public static async Task<IEnumerable<GLAccountViewModel>> ToViewModel(this Task<IReadOnlyList<GLAccount>> entitiesTask)
+    {
+        var entities = await entitiesTask;
+        return entities.Select(ToViewModelCore);
+    }
+
+    private static GLAccountViewModel ToViewModelCore(GLAccount entity)
+    {
+        return new GLAccountViewModel(entity.Id, entity.Code, entity.Name, entity.Postable.Value, entity.AccountingType.Value, entity.Balance);
+    }
+}
