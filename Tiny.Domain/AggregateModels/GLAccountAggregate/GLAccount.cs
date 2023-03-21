@@ -77,7 +77,7 @@ public class GLAccount : Entity, IAggregateRoot
 
         _accountingTypeId = accountingTypeId;
 
-        if (AccountingType.TryFromValue(accountingTypeId, out AccountingType accountingType))
+        if (AccountingType.TryFromValue(accountingTypeId, out var accountingType))
             AccountingType = accountingType;
 
         return this;

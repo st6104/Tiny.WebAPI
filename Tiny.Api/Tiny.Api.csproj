@@ -21,6 +21,7 @@
     <ProjectReference Include="..\Tiny.Application\Tiny.Application.csproj" />
     <ProjectReference Include="..\Tiny.Domain\Tiny.Domain.csproj" />
     <ProjectReference Include="..\Tiny.Infrastructure\Tiny.Infrastructure.csproj" />
+    <ProjectReference Include="..\Tiny.Infrastructure.Migrations\Tiny.Infrastructure.Migrations.csproj" />
   </ItemGroup>
 
 </Project>

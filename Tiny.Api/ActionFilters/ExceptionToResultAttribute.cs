@@ -15,7 +15,7 @@ public class ExceptionToResultAttribute : TranslateResultToActionResultAttribute
     {
         if (context.Exception is not null && context.Controller is ControllerBase controllerBase)
         {
-           if(!TryConvertToResult(context.Exception, out Result? result))
+            if (!TryConvertToResult(context.Exception, out var result))
                 return;
 
             context.ExceptionHandled = true;

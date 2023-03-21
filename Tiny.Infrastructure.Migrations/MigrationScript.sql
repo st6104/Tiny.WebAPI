@@ -148,7 +148,7 @@ CREATE UNIQUE INDEX [IX_User_Code] ON [dbo].[User] ([Code]);
 GO
 
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20230320011956_Init', N'7.0.4');
+VALUES (N'20230321015239_InitialCreate', N'7.0.4');
 GO
 
 COMMIT;

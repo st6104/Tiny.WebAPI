@@ -10,20 +10,20 @@ public sealed class ControllerResultException : Exception
 {
     public HttpStatusCode StatusCode{ get; }
 
-    public ControllerResultException(string? message, Exception? innerException, HttpStatusCode statusCode) : this(message, innerException)
+    public ControllerResultException(string? message, Exception? innerException, HttpStatusCode statusCode) : base(message, innerException)
     {
         StatusCode = statusCode;
     }
 
-    private ControllerResultException() : base()
+    public ControllerResultException() : base()
     {
     }
 
-    private ControllerResultException(string? message) : base(message)
+    public ControllerResultException(string? message) : base(message)
     {
     }
 
-    private ControllerResultException(string? message, Exception? innerException) : base(message, innerException)
+    public ControllerResultException(string? message, Exception? innerException) : base(message, innerException)
     {
     }
 }

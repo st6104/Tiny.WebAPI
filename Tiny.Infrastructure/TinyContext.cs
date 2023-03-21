@@ -31,8 +31,13 @@ public partial class TinyContext : DbContext, IUnitOfWork, IDomainEventStore
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
-        {//TODO : PK에 Hi/Lo 알고리즘(UseHilo())을 적용했을때 PK중복으로 인한 Retry가 되는지 확인필요.
-            optionsBuilder.UseSqlServer(_connectionStringStore.Default, options => options.EnableRetryOnFailure(maxRetryCount: Retry_Count, maxRetryDelay: TimeSpan.FromSeconds(5), errorNumbersToAdd: null));
+        {
+            optionsBuilder.UseSqlServer(_connectionStringStore.Default, options =>
+            {
+                options.EnableRetryOnFailure(maxRetryCount: Retry_Count, maxRetryDelay: TimeSpan.FromSeconds(5), errorNumbersToAdd: null);
+                options.MigrationsAssembly("Tiny.Infrastructure.Migrations");
+            });
+
             optionsBuilder.UseLoggerFactory(_loggerFactory);
         }
     }

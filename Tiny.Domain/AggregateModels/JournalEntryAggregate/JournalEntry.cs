@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 namespace Tiny.Domain.AggregateModels.JournalEntryAggregate;
 
 public class JournalEntry : Entity, IAggregateRoot

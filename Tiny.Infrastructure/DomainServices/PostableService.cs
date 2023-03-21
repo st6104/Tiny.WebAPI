@@ -7,6 +7,6 @@ public class PostableService : IPostableService
 {
     public Task<bool> ExistsAsync(int value, CancellationToken cancellationToken)
     {
-        return Task.Run(() => Postable.TryFromValue(value, out Postable postable));
+        return Task.Run(() => Postable.TryFromValue(value, out var postable));
     }
 }

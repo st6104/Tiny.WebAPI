@@ -3,20 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tiny.Infrastructure;
 
 #nullable disable
 
-namespace Tiny.Infrastructure.Migrations
+namespace Tiny.Infrastructure.Migrations.Migrations
 {
     [DbContext(typeof(TinyContext))]
-    [Migration("20230320011956_Init")]
-    partial class Init
+    partial class TinyContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
