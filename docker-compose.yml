@@ -1,0 +1,29 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
+
+version: '3.8'
+
+services:
+  tinyDb:
+    container_name: "tiny.db"
+    image: "mcr.microsoft.com/mssql/server:2019-lastest"
+    hostname: "tinydb"
+    ports:
+      - 1433:1433
+    environment:
+       - ACCEPT_EULA=Y
+       - MSSQL_SA_PASSWORD=wnsdlf83!!
+    volumes:
+       - ..\Tiny.Db\data:/var/opt/mssql/data
+       - ..\Tiny.Db\log:/var/opt/mssql/log
+       - ..\Tiny.Db\secrets:/var/opt/mssql/secrets
+
+  tinyapi:
+    container_name: "tiny.webapi"
+    image: "tinyapi:lastest"    
+    ports:
+      - 8099:8099
+    environment:
+      - ASPNETCORE_URLS=http://+:8099
+      - ConnectionStrings:Tiny=server=tinydb;database=TinyWebJournal;user id=sa;password=wnsdlf83!!
+    volumes:
+      - ~/.vsdbg:/remote_debugger:rw
