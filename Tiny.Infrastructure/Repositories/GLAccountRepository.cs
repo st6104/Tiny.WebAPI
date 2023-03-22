@@ -62,32 +62,8 @@ public class GLAccountRepository : IGLAccountRepository
         return query;
     }
 
-   
     public Task<bool> IsSatisfiedByAsync(ISpecification<GLAccount> specification, CancellationToken cancellationToken)
     {
         return _dbContext.GLAccount.WithSpecification(specification).AnyAsync(cancellationToken);
     }
-
-    // public async Task<GLAccount> ChangeAccoutingTypeAsync(long id, int accountingTypeId, CancellationToken cancellationToken)
-    // {
-    //     AccountingType.TryFromValue(accountingTypeId, out var accountingType);
-
-    //     var glAccount = await GetOneAsync(new GLAccountByIdSpec(id), cancellationToken);
-    //     glAccount.ChangeType(accountingType);
-    //     return glAccount;
-    // }
-
-    // public async Task<GLAccount> ChangeBalanceAsync(long id, decimal balance, CancellationToken cancellationToken)
-    // {
-    //     var glAccount = await GetOneAsync(new GLAccountByIdSpec(id), cancellationToken);
-    //     glAccount.ChangeBalance(balance);
-    //     return glAccount;
-    // }
-
-    // public async Task<GLAccount> ChangeNameAsync(long id, string name, CancellationToken cancellationToken)
-    // {
-    //     var glAccount = await GetOneAsync(new GLAccountByIdSpec(id), cancellationToken);
-    //     glAccount.ChangeName(name);
-    //     return glAccount;
-    // }
 }

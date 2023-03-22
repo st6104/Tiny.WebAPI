@@ -7,10 +7,6 @@ using Tiny.Api.RequestObjects;
 using Tiny.Application.Handlers.Commands;
 using Tiny.Application.Handlers.Queries;
 using Tiny.Application.ViewModels;
-using Tiny.Domain.AggregateModels.GLAccountAggregate;
-
-//TODO : ExceptionToResultAttribute에서 예외를 캐치하여 Result로 반환하지 말고 Result 객체를 만들 정보를 담은 Exception(가칭 : ExceptonForMakeResult)을 만들어서 던지고 전역에러핸들링 미들웨어에서 처리하자
-//TODO : 도메인엔티티에서 비지니스룰을 검사하는 우아한 방법??
 
 namespace Tiny.Api.Controllers;
 
