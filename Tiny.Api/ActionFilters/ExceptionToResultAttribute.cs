@@ -5,6 +5,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Tiny.Api.Extenstions;
 using Tiny.Shared.Exceptions;
 
 namespace Tiny.Api.ActionFilters;
@@ -33,6 +34,8 @@ public class ExceptionToResultAttribute : TranslateResultToActionResultAttribute
             result = Result.NotFound();
         else if (ex is ValidationException validationException)
             result = Result.Invalid(validationException.Errors.ToValidationErrors().ToList());
+        else if(ex is DomainValidationErrorException domainValidationErrorException)
+            result = Result.Invalid(domainValidationErrorException.ToValidationErrors().ToList());
 
         return result is not null;
     }

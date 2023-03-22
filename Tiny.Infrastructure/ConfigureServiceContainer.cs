@@ -16,8 +16,7 @@ public static class ConfigureServiceContainer
         services.Scan(scan =>
         {
             scan.FromAssemblyOf<MarkedAssemlbyClass>()
-                    .WithRepositories()
-                    .WithDomainServices();
+                    .WithRepositories();
         });
 
         services.AddMediatR(config =>
@@ -35,13 +34,6 @@ internal static class ScrutorExtension
     public static IImplementationTypeSelector WithRepositories(this IImplementationTypeSelector selector)
     {
         return selector.AddClasses(type => type.AssignableTo(typeof(IRepository<>)))
-                        .AsImplementedInterfaces()
-                        .WithScopedLifetime();
-    }
-
-    public static IImplementationTypeSelector WithDomainServices(this IImplementationTypeSelector selector)
-    {
-        return selector.AddClasses(type => type.AssignableTo<IDomainService>())
                         .AsImplementedInterfaces()
                         .WithScopedLifetime();
     }

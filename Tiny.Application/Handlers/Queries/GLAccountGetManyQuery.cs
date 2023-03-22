@@ -17,6 +17,6 @@ public class GLAccountGetManyQueryHandler : IRequestHandler<GLAccountGetManyQuer
 
     public async Task<IReadOnlyList<GLAccountViewModel>> Handle(GLAccountGetManyQuery request, CancellationToken cancellationToken)
     {
-        return (await _repository.GetAllAsync(cancellationToken).ToViewModel()).ToList().AsReadOnly();
+        return (await _repository.GetAllAsync(cancellationToken).ToViewModelAsync()).ToList().AsReadOnly();
     }
 }

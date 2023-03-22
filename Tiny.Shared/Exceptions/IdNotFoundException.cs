@@ -10,15 +10,22 @@ namespace Tiny.Shared.Exceptions;
 /// </summary>
 public sealed class IdNotFoundException : Exception
 {
-    public IdNotFoundException() : base()
+    public long FailedId { get; }
+
+    public IdNotFoundException(long failedId, string? message = null, Exception? innerException = null) : base(message, innerException)
+    {
+        FailedId = failedId;
+    }
+
+    private IdNotFoundException() : base()
     {
     }
 
-    public IdNotFoundException(string? message) : base(message)
+    private IdNotFoundException(string? message) : base(message)
     {
     }
 
-    public IdNotFoundException(string? message, Exception? innerException) : base(message, innerException)
+    private IdNotFoundException(string? message, Exception? innerException) : base(message, innerException)
     {
     }
 }

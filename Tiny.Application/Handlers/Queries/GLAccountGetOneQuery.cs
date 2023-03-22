@@ -1,6 +1,7 @@
 using Tiny.Application.ViewModelExtensions;
 using Tiny.Application.ViewModels;
 using Tiny.Domain.AggregateModels.GLAccountAggregate;
+using Tiny.Domain.AggregateModels.GLAccountAggregate.Specifications;
 
 namespace Tiny.Application.Handlers.Queries;
 
@@ -17,6 +18,6 @@ public class GLAccountGetOneQueryHandler : IRequestHandler<GLAccountGetOneQuery,
 
     public async Task<GLAccountViewModel> Handle(GLAccountGetOneQuery request, CancellationToken cancellationToken)
     {
-        return await _repository.GetOneAsync(request.Id, cancellationToken).ToViewModel();
+        return await _repository.GetOneAsync(new GLAccountByIdSpec(request.Id), cancellationToken).ToViewModelAsync();
     }
 }

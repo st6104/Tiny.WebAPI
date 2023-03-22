@@ -1,4 +1,7 @@
+using Ardalis.Specification;
+using Ardalis.Specification.EntityFrameworkCore;
 using Tiny.Domain.AggregateModels.GLAccountAggregate;
+using Tiny.Domain.AggregateModels.GLAccountAggregate.Specifications;
 using Tiny.Shared.Exceptions;
 using Tiny.Shared.Repository;
 
@@ -14,74 +17,77 @@ public class GLAccountRepository : IGLAccountRepository
         this._dbContext = dbContext;
     }
 
-    public async Task<GLAccount> AddAsync(GLAccount glAccount, CancellationToken cancellationToken)
+    public async Task AddAsync(GLAccount glAccount, CancellationToken cancellationToken)
     {
         await _dbContext.AddAsync(glAccount, cancellationToken);
-
-        await UnitOfWork.SaveEntitiesAsync(cancellationToken);
-
-        return glAccount;
     }
 
-    public async Task<GLAccount> UpdateAsync(GLAccount glAccount, CancellationToken cancellationToken)
+    public async Task UpdateAsync(GLAccount glAccount, CancellationToken cancellationToken)
     {
-        _dbContext.Entry(glAccount).State = EntityState.Modified;
+        await Task.Run(() =>
+        {
+            var entry = _dbContext.Entry(glAccount);
 
-        await UnitOfWork.SaveEntitiesAsync(cancellationToken);
-
-        return await GetOneAsync(glAccount.Id, cancellationToken);
+            _dbContext.GLAccount.Attach(glAccount).State = EntityState.Modified;
+        }, cancellationToken);
     }
 
-    public async Task<GLAccount> ChangeAccoutingTypeAsync(long id, int accountingTypeId, CancellationToken cancellationToken)
+     public async Task DeleteAsync(long id, CancellationToken cancellationToken)
     {
-        AccountingType.TryFromValue(accountingTypeId, out var accountingType);
-
-        var glAccount = await GetOneAsync(id, cancellationToken);
-        glAccount.ChangeType(accountingType);
-        await UnitOfWork.SaveEntitiesAsync(cancellationToken);
-        return glAccount;
-    }
-
-    public async Task<GLAccount> ChangeBalanceAsync(long id, decimal balance, CancellationToken cancellationToken)
-    {
-        var glAccount = await GetOneAsync(id, cancellationToken);
-        glAccount.ChangeBalance(balance);
-        await UnitOfWork.SaveEntitiesAsync(cancellationToken);
-        return glAccount;
-    }
-
-    public async Task<GLAccount> ChangeNameAsync(long id, string name, CancellationToken cancellationToken)
-    {
-        var glAccount = await GetOneAsync(id, cancellationToken);
-        glAccount.ChangeName(name);
-        await UnitOfWork.SaveEntitiesAsync(cancellationToken);
-        return glAccount;
+        var glAccount = await GetOneAsync(new GLAccountByIdSpec(id), cancellationToken);
+        glAccount.MarkAsDelete();
     }
 
     public async Task<IReadOnlyList<GLAccount>> GetAllAsync(CancellationToken cancellationToken)
     {
-        return await GetCore(true).ToListAsync(cancellationToken);
+        return await GetCore(null).ToListAsync(cancellationToken);
     }
 
-    public async Task<GLAccount> GetOneAsync(long id, CancellationToken cancellationToken)
+    public async Task<GLAccount> GetOneAsync(GLAccountByIdSpec spec, CancellationToken cancellationToken)
     {
-        var glAccount = await GetCore(true).FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
+        var glAccount = await GetCore(spec).FirstOrDefaultAsync(cancellationToken);
         if (glAccount is null)
-            throw new IdNotFoundException();
+            throw new IdNotFoundException(spec.Id);
 
         return glAccount;
     }
 
-    public IQueryable<GLAccount> GetCore(bool withNavigationProperties)
+    public IQueryable<GLAccount> GetCore(ISpecification<GLAccount>? spec)
     {
         var query = _dbContext.GLAccount.AsQueryable();
 
-        if (withNavigationProperties)
-        {
-            query = query.Include(x => x.AccountingType)
-                        .Include(x => x.Postable);
-        }
+        if (spec != null)
+            query = query.WithSpecification(spec);
 
         return query;
     }
+
+   
+    public Task<bool> IsSatisfiedByAsync(ISpecification<GLAccount> specification, CancellationToken cancellationToken)
+    {
+        return _dbContext.GLAccount.WithSpecification(specification).AnyAsync(cancellationToken);
+    }
+
+    // public async Task<GLAccount> ChangeAccoutingTypeAsync(long id, int accountingTypeId, CancellationToken cancellationToken)
+    // {
+    //     AccountingType.TryFromValue(accountingTypeId, out var accountingType);
+
+    //     var glAccount = await GetOneAsync(new GLAccountByIdSpec(id), cancellationToken);
+    //     glAccount.ChangeType(accountingType);
+    //     return glAccount;
+    // }
+
+    // public async Task<GLAccount> ChangeBalanceAsync(long id, decimal balance, CancellationToken cancellationToken)
+    // {
+    //     var glAccount = await GetOneAsync(new GLAccountByIdSpec(id), cancellationToken);
+    //     glAccount.ChangeBalance(balance);
+    //     return glAccount;
+    // }
+
+    // public async Task<GLAccount> ChangeNameAsync(long id, string name, CancellationToken cancellationToken)
+    // {
+    //     var glAccount = await GetOneAsync(new GLAccountByIdSpec(id), cancellationToken);
+    //     glAccount.ChangeName(name);
+    //     return glAccount;
+    // }
 }

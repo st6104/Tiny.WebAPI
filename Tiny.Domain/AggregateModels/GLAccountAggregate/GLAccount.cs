@@ -1,3 +1,4 @@
+using System.Diagnostics.Contracts;
 using System.Net.Cache;
 using Tiny.Domain.AggregateModels.GLAccountAggregate.Events;
 
@@ -26,25 +27,35 @@ public class GLAccount : Entity, IAggregateRoot
     /// 분개가능계정 여부
     /// </summary>
     public Postable Postable { get; } = null!;
-    private readonly int _postableId;
+    public int PostableId { get; private set; }
 
     /// <summary>
     /// 계정분류
     /// </summary>
     public AccountingType AccountingType { get; private set; } = null!;
-    private int _accountingTypeId;
+    public int AccountingTypeId { get; private set; }
 
     /// <summary>
     /// 계정잔액
     /// </summary>
     public decimal Balance { get; private set; }
 
+    /// <summary>
+    /// 삭제되었는지 여부
+    /// </summary>
+    public bool Deleted{ get; private set; }
+
+    /// <summary>
+    /// 삭제일시
+    /// </summary>
+    public DateTime? DeletedAt{ get; private set; }
+
     public GLAccount(string code, string name, int postableId, int accountingTypeId)
     {
         Code = code;
         Name = name;
-        _postableId = postableId;
-        _accountingTypeId = accountingTypeId;
+        PostableId = postableId;
+        AccountingTypeId = accountingTypeId;
         Balance = InitialBalance;
 
         AddDomainEvent(new GLAccountAddedDomainEvent(this));
@@ -52,7 +63,7 @@ public class GLAccount : Entity, IAggregateRoot
 
     public GLAccount ChangeCode(string code)
     {
-        if(!IsTransient())
+        if (!IsTransient() && code != Code)
             AddDomainEvent(new GLAccountCodeChangedDomainEvent(Code, code));
 
         Code = code;
@@ -62,7 +73,7 @@ public class GLAccount : Entity, IAggregateRoot
 
     public GLAccount ChangeName(string name)
     {
-        if (!IsTransient())
+        if (!IsTransient() && name != Name)
             AddDomainEvent(new GLAccountNameChangedDomainEvent(Name, name));
 
         Name = name;
@@ -72,10 +83,10 @@ public class GLAccount : Entity, IAggregateRoot
 
     public GLAccount ChangeType(int accountingTypeId)
     {
-        if (!IsTransient())
-            AddDomainEvent(new GLAccountTypeChangedDomainEvent(_accountingTypeId, accountingTypeId));
+        if (!IsTransient() && accountingTypeId != AccountingTypeId)
+            AddDomainEvent(new GLAccountTypeChangedDomainEvent(AccountingTypeId, accountingTypeId));
 
-        _accountingTypeId = accountingTypeId;
+        AccountingTypeId = accountingTypeId;
 
         if (AccountingType.TryFromValue(accountingTypeId, out var accountingType))
             AccountingType = accountingType;
@@ -85,11 +96,21 @@ public class GLAccount : Entity, IAggregateRoot
 
     public GLAccount ChangeBalance(decimal balance)
     {
-        if (!IsTransient())
+        if (!IsTransient() && balance != Balance)
             AddDomainEvent(new GLAccountBalanceChangedDomainEvent(Balance, balance));
 
         Balance = balance;
 
         return this;
+    }
+
+    public void MarkAsDelete()
+    {
+        if(IsTransient() || Deleted) return;
+
+        Deleted = true;
+        DeletedAt = DateTime.UtcNow;
+
+        AddDomainEvent(new GLAccountDeletedDomainEvent(this));
     }
 }

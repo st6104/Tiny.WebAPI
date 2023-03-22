@@ -10,7 +10,7 @@ namespace Tiny.Application.ViewModelExtensions;
 
 internal static class DomainToViewModelExtension
 {
-    public static Task<GLAccountViewModel> ToViewModel(this Task<GLAccount> entityTask)
+    public static Task<GLAccountViewModel> ToViewModelAsync(this Task<GLAccount> entityTask)
     {
         return Task.Run(async () =>
         {
@@ -19,14 +19,19 @@ internal static class DomainToViewModelExtension
         });
     }
 
-    public static async Task<IEnumerable<GLAccountViewModel>> ToViewModel(this Task<IReadOnlyList<GLAccount>> entitiesTask)
+    public static async Task<IEnumerable<GLAccountViewModel>> ToViewModelAsync(this Task<IReadOnlyList<GLAccount>> entitiesTask)
     {
         var entities = await entitiesTask;
         return entities.Select(ToViewModelCore);
     }
 
+    public static GLAccountViewModel ToViewModel(this GLAccount entity)
+    {
+        return ToViewModelCore(entity);
+    }
+
     private static GLAccountViewModel ToViewModelCore(GLAccount entity)
     {
-        return new GLAccountViewModel(entity.Id, entity.Code, entity.Name, entity.Postable.Value, entity.AccountingType.Value, entity.Balance);
+        return new GLAccountViewModel(entity.Id, entity.Code, entity.Name, entity.PostableId, entity.AccountingTypeId, entity.Balance);
     }
 }
