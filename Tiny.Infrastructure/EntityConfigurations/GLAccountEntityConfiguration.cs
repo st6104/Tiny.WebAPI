@@ -26,27 +26,27 @@ public class GLAccountEntityConfiguration : IEntityTypeConfiguration<GLAccount>
         builder.Property(x => x.Name).HasMaxLength(GLAccount.NameLength).IsRequired();
 
         // _postableId 멤버변수를 NotNull로 설정
-        builder.Property<int>("_postableId").HasColumnName("PostableId")
-                        .UsePropertyAccessMode(PropertyAccessMode.Field)
-                        .IsRequired();
+        builder.Property(x => x.PostableId).IsRequired();
 
         builder.HasOne(x => x.Postable)
                 .WithMany()
-                .HasForeignKey("_postableId")
+                .HasForeignKey(x => x.PostableId)
                 .IsRequired();
 
         // _accountTypeId 멤버변수를 NotNull로 설정
-        builder.Property<int>("_accountingTypeId").HasColumnName("AccountTypeId")
-                        .UsePropertyAccessMode(PropertyAccessMode.Field)
-                        .IsRequired();
+        builder.Property(x => x.AccountingTypeId).IsRequired();
 
         builder.HasOne(x => x.AccountingType)
                 .WithMany()
-                .HasForeignKey("_accountingTypeId")
+                .HasForeignKey(x => x.AccountingTypeId)
                 .IsRequired();
 
         // Balance 필드를 기본값을 0으로 설정하고 NotNull로 설정
         builder.Property(x => x.Balance)
                 .HasDefaultValue(decimal.Zero);
+
+        builder.Property(x => x.Deleted).HasDefaultValue(false);
+
+        builder.Property(x => x.DeletedAt);
     }
 }
