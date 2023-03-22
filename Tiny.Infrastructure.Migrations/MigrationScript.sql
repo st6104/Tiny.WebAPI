@@ -154,3 +154,41 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+ALTER TABLE [dbo].[GLAccount] DROP CONSTRAINT [FK_GLAccount_AccountingType_AccountTypeId];
+GO
+
+EXEC sp_rename N'[dbo].[GLAccount].[AccountTypeId]', N'AccountingTypeId', N'COLUMN';
+GO
+
+EXEC sp_rename N'[dbo].[GLAccount].[IX_GLAccount_AccountTypeId]', N'IX_GLAccount_AccountingTypeId', N'INDEX';
+GO
+
+ALTER TABLE [dbo].[GLAccount] ADD CONSTRAINT [FK_GLAccount_AccountingType_AccountingTypeId] FOREIGN KEY ([AccountingTypeId]) REFERENCES [dbo].[AccountingType] ([Id]) ON DELETE CASCADE;
+GO
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20230321081222_Second', N'7.0.4');
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+ALTER TABLE [dbo].[GLAccount] ADD [Deleted] bit NOT NULL DEFAULT CAST(0 AS bit);
+GO
+
+ALTER TABLE [dbo].[GLAccount] ADD [DeletedAt] datetime2 NULL;
+GO
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20230321085013_AddDeletedDeletedAtOnGLAccount', N'7.0.4');
+GO
+
+COMMIT;
+GO
+

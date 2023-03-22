@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tiny.Infrastructure;
 
@@ -11,9 +12,11 @@ using Tiny.Infrastructure;
 namespace Tiny.Infrastructure.Migrations.Migrations
 {
     [DbContext(typeof(TinyContext))]
-    partial class TinyContextModelSnapshot : ModelSnapshot
+    [Migration("20230321085013_AddDeletedDeletedAtOnGLAccount")]
+    partial class AddDeletedDeletedAtOnGLAccount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
