@@ -5,7 +5,7 @@ namespace Tiny.Domain.AggregateModels.JournalEntryAggregate;
 public class JournalEntryLine : Entity
 {
     public GLAccount GLAccount { get; } = null!;
-    private long _gLAccountId;
+    public long GLAccountId { get; private set; }
 
     /// <summary>
     /// 차변금액
@@ -20,28 +20,53 @@ public class JournalEntryLine : Entity
     /// <summary>
     /// 적요
     /// </summary>
-    public string Description { get; } = string.Empty;
+    public string Description { get; private set; } = string.Empty;
 
-    public JournalEntryLine(long gLAccountId, decimal debitAmount, decimal creditAmount, string description)
+    internal JournalEntryLine(long gLAccountId, decimal debitAmount, decimal creditAmount, string description)
     {
-        _gLAccountId = gLAccountId;
+        GLAccountId = gLAccountId;
         DebitAmount = debitAmount;
         CreditAmount = creditAmount;
         Description = description;
     }
 
-    public void ChangeGLAccount(long glAccountId)
+    public JournalEntryLine ChangeGLAccount(long glAccountId)
     {
-        _gLAccountId = glAccountId;
+        if (GLAccountId == glAccountId)
+            return this;
+
+        GLAccountId = glAccountId;
+
+        return this;
     }
 
-    public void ChangeDebitAmount(decimal debitAmount)
+    public JournalEntryLine ChangeDebitAmount(decimal debitAmount)
     {
+        if(DebitAmount == debitAmount)
+            return this;
+
         DebitAmount = debitAmount;
+
+        return this;
     }
 
-    public void ChangeCreditAmount(decimal creditAmount)
+    public JournalEntryLine ChangeCreditAmount(decimal creditAmount)
     {
+        if(CreditAmount == creditAmount)
+            return this;
+
         CreditAmount = creditAmount;
+
+        return this;
+    }
+
+    public JournalEntryLine SetDescription(string description)
+    {
+        if(Description == description)
+            return this;
+
+        Description = description;
+
+        return this;
     }
 }

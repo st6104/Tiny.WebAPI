@@ -7,7 +7,9 @@ namespace Tiny.Shared.DomainEntity;
 
 public interface ISoftDeletable
 {
-    bool Deleted{ get; }
+    bool Deleted { get; }
 
-    DateTime? DaletedAt{ get; set; }
+    DateTime? DeletedAt { get; }
+
+    void MarkAsDelete();
 }

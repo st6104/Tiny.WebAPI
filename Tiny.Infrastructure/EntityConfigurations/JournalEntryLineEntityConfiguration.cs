@@ -12,20 +12,18 @@ public class JournalEntryLineEntityConfiguration : IEntityTypeConfiguration<Jour
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
-        builder.Property("_gLAccountId")
-                .HasColumnName("GLAccountId")
-                .UsePropertyAccessMode(PropertyAccessMode.Field)
+        builder.Property(x => x.GLAccountId)
                 .IsRequired();
 
         builder.HasOne(x => x.GLAccount)
                 .WithMany()
-                .HasForeignKey("_gLAccountId")
+                .HasForeignKey(x => x.GLAccountId)
                 .IsRequired();
 
-        builder.Property(x => x.DebitAmount);
+        builder.Property(x => x.DebitAmount).HasDefaultValue(decimal.Zero);
 
-        builder.Property(x => x.CreditAmount);
+        builder.Property(x => x.CreditAmount).HasDefaultValue(decimal.Zero);
 
-        builder.Property(x => x.Description);
+        builder.Property(x => x.Description).HasDefaultValue(string.Empty);
     }
 }

@@ -43,12 +43,12 @@ public class GLAccount : Entity, IAggregateRoot
     /// <summary>
     /// 삭제되었는지 여부
     /// </summary>
-    public bool Deleted{ get; private set; }
+    public bool Deleted { get; private set; }
 
     /// <summary>
     /// 삭제일시
     /// </summary>
-    public DateTime? DeletedAt{ get; private set; }
+    public DateTime? DeletedAt { get; private set; }
 
     public GLAccount(string code, string name, int postableId, int accountingTypeId)
     {
@@ -106,7 +106,7 @@ public class GLAccount : Entity, IAggregateRoot
 
     public void MarkAsDelete()
     {
-        if(IsTransient() || Deleted) return;
+        if (IsTransient() || Deleted) return;
 
         Deleted = true;
         DeletedAt = DateTime.UtcNow;
