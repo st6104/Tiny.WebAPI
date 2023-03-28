@@ -1,6 +1,6 @@
 namespace Tiny.Domain.AggregateModels.JournalEntryAggregate;
 
-public class Department : Entity
+public class Department : SoftDeletableEntity, IHasTenantId
 {
     public string Code { get; }
 

@@ -1,4 +1,8 @@
 using System.Data.SqlTypes;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Tiny.Api.Middlewares;
+using Tiny.Api.OperationFilters;
+
 namespace Tiny.Api.Extenstions;
 
 internal static class StartupExtension
@@ -7,7 +11,12 @@ internal static class StartupExtension
     {
         builder.Services.AddControllers(mvcOptions => mvcOptions.SetResultConvention());
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(config =>
+        {
+            config.SupportNonNullableReferenceTypes();
+            config.OperationFilter<TenantHeaderSwaggerAttribute>();
+            config.AddSwaggerXmlDocuments();
+        });
         builder.Services.AddAssemblyServices();
 
         return builder;
@@ -26,7 +35,25 @@ internal static class StartupExtension
 
         app.UseAuthorization();
 
+        app.UseMiddlewares();
+
         app.MapControllers();
+
+        return app;
+    }
+
+    private static void AddSwaggerXmlDocuments(this SwaggerGenOptions config)
+    {
+        var applicationXml = Path.Combine(AppContext.BaseDirectory, "Tiny.Application.xml");
+        var apiXml = Path.Combine(AppContext.BaseDirectory, "Tiny.Api.xml");
+        config.IncludeXmlComments(applicationXml);
+        config.IncludeXmlComments(apiXml, true);
+    }
+
+    private static WebApplication UseMiddlewares(this WebApplication app)
+    {
+        app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+        app.UseMiddleware<MultiTenantMiddleware>();
 
         return app;
     }

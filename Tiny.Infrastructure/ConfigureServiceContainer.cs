@@ -1,8 +1,8 @@
-using System.Reflection.Metadata.Ecma335;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
+using Tiny.Infrastructure.Abstract.MultiTenant;
 using Tiny.Infrastructure.Behaviors;
-using Tiny.Shared.DomainService;
+using Tiny.Infrastructure.MultiTenant;
 using Tiny.Shared.Repository;
 
 namespace Tiny.Infrastructure;
@@ -25,6 +25,9 @@ public static class ConfigureServiceContainer
             config.AddBehavior(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
         });
 
+        services.AddScoped<IMultiTenantStore<TenantInfo>, MultiTenantStore>();
+        services.AddScoped<ICurrentTenantInfo, CurrentTenantInfo>();
+
         return services;
     }
 }
@@ -37,6 +40,13 @@ internal static class ScrutorExtension
                         .AsImplementedInterfaces()
                         .WithScopedLifetime();
     }
+
+    //public static IImplementationTypeSelector WithEntityConfigurations(this IImplementationTypeSelector selector)
+    //{
+    //    return selector.AddClasses(type => type.AssignableTo(typeof(IEntityTypeConfiguration<>)))
+    //                    .AsSelf()
+    //                    .WithTransientLifetime();
+    //}
 }
 
 internal class MarkedAssemlbyClass { }

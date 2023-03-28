@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Logging;
-using Tiny.Application.Interfaces;
+using Tiny.Infrastructure.Abstract.MultiTenant;
 
 namespace Tiny.Infrastructure;
 
@@ -8,8 +8,24 @@ public class TinyContextDesignFactory : IDesignTimeDbContextFactory<TinyContext>
 {
     public TinyContext CreateDbContext(string[] args)
     {
-        return new TinyContext(new FakeDbConnectionStringStore(), new FakeMediator(), new FakeLoggerFactory());
+        return new TinyContext(new FakeMediator(), new FakeLoggerFactory(), new FakeCurrentTenant());
     }
+
+    class FakeCurrentTenant : ICurrentTenantInfo
+    {
+        public ITenantInfo Current { get => new FakeTenantInfo(); set { } }
+
+        class FakeTenantInfo : ITenantInfo
+        {
+            public string Id => string.Empty;
+
+            public string Name => string.Empty;
+
+            public string ConnectionString => string.Empty;
+        }
+    }
+
+
 
     class FakeLoggerFactory : ILoggerFactory
     {
@@ -42,11 +58,6 @@ public class TinyContextDesignFactory : IDesignTimeDbContextFactory<TinyContext>
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
         }
-    }
-
-    class FakeDbConnectionStringStore : IDbConnectionStore
-    {
-        public string Default => string.Empty;
     }
 
     class FakeMediator : IMediator

@@ -1,16 +1,21 @@
-using System.Security.Cryptography.X509Certificates;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tiny.Domain.AggregateModels.GLAccountAggregate;
+using Tiny.Infrastructure.Abstract.MultiTenant;
+using Tiny.Infrastructure.Abstract;
 
 namespace Tiny.Infrastructure.EntityConfigurations;
 
 // GLAccount 엔티티 모델 빌드 클래스
-public class GLAccountEntityConfiguration : IEntityTypeConfiguration<GLAccount>
+public class GLAccountEntityConfiguration : EntityTypeConfigurationBase<GLAccount>
 {
-    public void Configure(EntityTypeBuilder<GLAccount> builder)
+    public GLAccountEntityConfiguration(ITenantInfo currentTenant) : base(currentTenant)
+    {
+    }
+
+    public override void ConfigureEntity(EntityTypeBuilder<GLAccount> builder)
     {
         // 테이블 이름 설정
-        builder.ToTable("GLAccount", TinyContext.Default_Schema);
+        builder.ToTable(nameof(GLAccount), TinyContext.DefaultSchema);
 
         // Id 프로퍼티를 PK로 설정
         builder.HasKey(x => x.Id);
@@ -46,7 +51,5 @@ public class GLAccountEntityConfiguration : IEntityTypeConfiguration<GLAccount>
                 .HasDefaultValue(decimal.Zero);
 
         builder.Property(x => x.Deleted).HasDefaultValue(false);
-
-        builder.Property(x => x.DeletedAt);
     }
 }

@@ -1,5 +1,5 @@
 namespace Tiny.Shared.DomainEntity;
 
-public interface IAggregateRoot : ISoftDeletable
+public interface IAggregateRoot : ISoftDeletable, IHasTenantId
 {
 }

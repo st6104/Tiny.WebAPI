@@ -105,6 +105,11 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     b.Property<int>("PostableId")
                         .HasColumnType("int");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AccountingTypeId");
@@ -129,7 +134,7 @@ namespace Tiny.Infrastructure.Migrations.Migrations
 
                     b.HasKey("Value");
 
-                    b.ToTable("Postable", (string)null);
+                    b.ToTable("Postable", "dbo");
 
                     b.HasData(
                         new
@@ -150,14 +155,25 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseHiLo(b.Property<long>("Id"), "EntityFrameworkHiLoSequence");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -202,13 +218,18 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     b.Property<DateTime>("PostingDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
 
                     b.HasIndex("JournalEntryStatusId");
 
-                    b.ToTable("JournalEntry");
+                    b.ToTable("JournalEntry", "dbo");
                 });
 
             modelBuilder.Entity("Tiny.Domain.AggregateModels.JournalEntryAggregate.JournalEntryLine", b =>
@@ -298,7 +319,18 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");

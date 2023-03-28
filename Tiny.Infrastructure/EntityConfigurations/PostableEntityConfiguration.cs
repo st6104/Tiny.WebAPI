@@ -1,13 +1,19 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tiny.Domain.AggregateModels.GLAccountAggregate;
+using Tiny.Infrastructure.Abstract.MultiTenant;
+using Tiny.Infrastructure.Abstract;
 
 namespace Tiny.Infrastructure.EntityConfigurations;
 
-public class PostableEntityConfiguration : IEntityTypeConfiguration<Postable>
+public class PostableEntityConfiguration : EntityTypeConfigurationBase<Postable>
 {
-    public void Configure(EntityTypeBuilder<Postable> builder)
+    public PostableEntityConfiguration(ITenantInfo currentTenant) : base(currentTenant)
     {
-        builder.ToTable("Postable");
+    }
+
+    public override void ConfigureEntity(EntityTypeBuilder<Postable> builder)
+    {
+        builder.ToTable(nameof(Postable), TinyContext.DefaultSchema);
 
         builder.HasKey(x => x.Value);
 

@@ -1,55 +1,85 @@
 using System.Data;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
-using Tiny.Application.Interfaces;
+using Tiny.Infrastructure.Abstract.MultiTenant;
+using Tiny.Infrastructure.Abstract.SoftDelete;
+using Tiny.Infrastructure.DbContextCustomServices;
 using Tiny.Infrastructure.Exceptions;
 using Tiny.Infrastructure.Extensions;
 using Tiny.Shared.DomainEntity;
 using Tiny.Shared.DomainEvent;
 using Tiny.Shared.Repository;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Tiny.Infrastructure;
 
 public partial class TinyContext : DbContext, IUnitOfWork, IDomainEventStore
 {
-    public const string Default_Schema = "dbo";
+    public const string DefaultSchema = "dbo";
+    private const string MigrationAssembly = "Tiny.Infrastructure.Migrations";
     private const int Retry_Count = 3;
 
     private readonly IMediator _mediator;
     private IDbContextTransaction? _currentTransaction;
-    private readonly IDbConnectionStore _connectionStringStore;
     private readonly ILoggerFactory _loggerFactory;
+    private readonly ICurrentTenantInfo _currentTanent;
 
-    public TinyContext(IDbConnectionStore connectionStringStore, IMediator mediator, ILoggerFactory loggerFactory) : base()
+    public TinyContext(IMediator mediator, ILoggerFactory loggerFactory, ICurrentTenantInfo currentTanent) : base()
     {
-        this._loggerFactory = loggerFactory;
-        this._mediator = mediator;
-        this._connectionStringStore = connectionStringStore;
+        _loggerFactory = loggerFactory;
+        _currentTanent = currentTanent;
+        _mediator = mediator;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (!optionsBuilder.IsConfigured)
+        if (!optionsBuilder.IsConfigured && _currentTanent.Current != null)
         {
-            optionsBuilder.UseSqlServer(_connectionStringStore.Default, options =>
+            optionsBuilder.UseSqlServer(_currentTanent.Current.ConnectionString, options =>
             {
                 options.EnableRetryOnFailure(maxRetryCount: Retry_Count, maxRetryDelay: TimeSpan.FromSeconds(5), errorNumbersToAdd: null);
-                options.MigrationsAssembly("Tiny.Infrastructure.Migrations");
+                options.MigrationsAssembly(MigrationAssembly);
+
             });
 
             optionsBuilder.UseLoggerFactory(_loggerFactory);
         }
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.ApplyEntityConfigurationsFromAssemblyContaining<TinyContext>();
-    }
-
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         configurationBuilder.SetPreconventions();
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyEntityConfigurationsFromAssemblyContaining<TinyContext>(_currentTanent.Current);
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {//TODO : 테스트 필요
+        var addedOrModifiedEntityStatus = new EntityState[] { EntityState.Added, EntityState.Modified };
+
+        var addedOrModifiedTenantEntries = ChangeTracker.Entries<IHasTenantId>()
+                                                        .Where(entry => addedOrModifiedEntityStatus.Any(status => status == entry.State))
+                                                        .ToList();
+
+        addedOrModifiedTenantEntries.ForEach(entry => entry.Property(TenantFieldNames.Id).CurrentValue = _currentTanent.Current.Id);
+
+        var addedOrModifiedSoftDeleteEntries = ChangeTracker.Entries<ISoftDeletable>()
+                                                            .Where(entry => addedOrModifiedEntityStatus.Any(status => status == entry.State)
+                                                                            && entry.Entity.Deleted)
+                                                            .ToList();
+
+        addedOrModifiedSoftDeleteEntries.ForEach(entry =>
+        {
+            entry.Property(SoftDeleteFieldNames.DeletedAt).CurrentValue = DateTime.UtcNow;
+        });
+
+
+        return base.SaveChangesAsync(cancellationToken);
     }
 
     #region IDomainEventStore Implements
@@ -74,7 +104,7 @@ public partial class TinyContext : DbContext, IUnitOfWork, IDomainEventStore
     {
         await _mediator.DispatchDomainEventsAsync(this, cancellationToken);
 
-        await base.SaveChangesAsync(cancellationToken);
+        await this.SaveChangesAsync(cancellationToken);
 
         return true;
     }

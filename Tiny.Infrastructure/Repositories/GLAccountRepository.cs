@@ -35,7 +35,7 @@ public class GLAccountRepository : IGLAccountRepository
      public async Task DeleteAsync(long id, CancellationToken cancellationToken)
     {
         var glAccount = await GetOneAsync(new GLAccountByIdSpec(id), cancellationToken);
-        glAccount.MarkAsDelete();
+        glAccount.TryMarkAsDelete();
     }
 
     public async Task<IReadOnlyList<GLAccount>> GetAllAsync(CancellationToken cancellationToken)
@@ -46,10 +46,7 @@ public class GLAccountRepository : IGLAccountRepository
     public async Task<GLAccount> GetOneAsync(GLAccountByIdSpec spec, CancellationToken cancellationToken)
     {
         var glAccount = await GetCore(spec).FirstOrDefaultAsync(cancellationToken);
-        if (glAccount is null)
-            throw new IdNotFoundException(spec.Id);
-
-        return glAccount;
+        return glAccount ?? throw new IdNotFoundException(spec.Id);
     }
 
     public IQueryable<GLAccount> GetCore(ISpecification<GLAccount>? spec)

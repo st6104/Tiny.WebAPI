@@ -1,9 +1,17 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net.NetworkInformation;
 using Tiny.Domain.AggregateModels.GLAccountAggregate;
 using Tiny.Domain.AggregateModels.GLAccountAggregate.Services;
 
 namespace Tiny.Application.Handlers.Commands;
 
+/// <summary>
+/// 계정과목 신규 추가 커맨드 객체
+/// </summary>
+/// <param name="Code">코드</param>
+/// <param name="Name">이름</param>
+/// <param name="PostableId">계정구분</param>
+/// <param name="AccountTypeId">계정체계</param>
 public record GLAccountAddCommand(string Code, string Name, int PostableId, int AccountTypeId) : IRequest<long>;
 
 public class GLAccountAddCommandHandler : IRequestHandler<GLAccountAddCommand, long>

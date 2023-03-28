@@ -28,7 +28,6 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
 
             await stratagy.ExecuteAsync(async () =>
             {
-                _logger.LogInformation("");
                 await using var transaction = await _dbContext.BeginTransactionAsync();
                 var transactionId = transaction.TransactionId;
                 _logger.LogInformation("----- Begin transaction {TransactionId} for {CommandName} ({@Command})", transaction.TransactionId, typeName, request);

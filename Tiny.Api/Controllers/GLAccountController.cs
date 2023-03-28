@@ -10,6 +10,9 @@ using Tiny.Application.ViewModels;
 
 namespace Tiny.Api.Controllers;
 
+/// <summary>
+/// 계정과목
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class GLAccountController : ControllerBase

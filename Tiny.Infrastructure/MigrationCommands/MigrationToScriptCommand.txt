@@ -1,0 +1,1 @@
+﻿dotnet ef migrations script -p ../Tiny.Infrastructure.Migrations -o ../Tiny.Infrastructure.Migrations/MigrationScript.sql

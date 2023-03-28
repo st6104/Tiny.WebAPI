@@ -1,13 +1,19 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tiny.Domain.AggregateModels.JournalEntryAggregate;
+using Tiny.Infrastructure.Abstract.MultiTenant;
+using Tiny.Infrastructure.Abstract;
 
 namespace Tiny.Infrastructure.EntityConfigurations;
 
-public class JournalEntryLineEntityConfiguration : IEntityTypeConfiguration<JournalEntryLine>
+public class JournalEntryLineEntityConfiguration : EntityTypeConfigurationBase<JournalEntryLine>
 {
-    public void Configure(EntityTypeBuilder<JournalEntryLine> builder)
+    public JournalEntryLineEntityConfiguration(ITenantInfo currentTenant) : base(currentTenant)
     {
-        builder.ToTable("JournalEntryLine", TinyContext.Default_Schema);
+    }
+
+    public override void ConfigureEntity(EntityTypeBuilder<JournalEntryLine> builder)
+    {
+        builder.ToTable(nameof(JournalEntryLine), TinyContext.DefaultSchema);
 
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).ValueGeneratedOnAdd();

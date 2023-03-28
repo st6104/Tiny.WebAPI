@@ -4,6 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,11 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Tiny.Infrastructure\Tiny.Infrastructure.csproj" />
     <ProjectReference Include="..\Tiny.Shared\Tiny.Shared.csproj" />
     <ProjectReference Include="..\Tiny.Application\Tiny.Application.csproj" />
     <ProjectReference Include="..\Tiny.Domain\Tiny.Domain.csproj" />
-    <ProjectReference Include="..\Tiny.Infrastructure\Tiny.Infrastructure.csproj" />
-    <ProjectReference Include="..\Tiny.Infrastructure.Migrations\Tiny.Infrastructure.Migrations.csproj" />
   </ItemGroup>
 
 </Project>

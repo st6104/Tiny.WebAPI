@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Tiny.Domain\Tiny.Domain.csproj" />
+    <ProjectReference Include="..\Tiny.Infrastructure.Abstract.cs\Tiny.Infrastructure.Abstract.csproj" />
     <ProjectReference Include="..\Tiny.Shared\Tiny.Shared.csproj" />
     <ProjectReference Include="..\Tiny.Application\Tiny.Application.csproj" />
   </ItemGroup>

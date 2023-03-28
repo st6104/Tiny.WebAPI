@@ -1,12 +1,18 @@
 using Tiny.Domain.AggregateModels.JournalEntryAggregate;
+using Tiny.Infrastructure.Abstract.MultiTenant;
+using Tiny.Infrastructure.Abstract;
 
 namespace Tiny.Infrastructure.EntityConfigurations;
 
-public class JournalEntryStatusEntityConfiguration : IEntityTypeConfiguration<JournalEntryStatus>
+public class JournalEntryStatusEntityConfiguration : EntityTypeConfigurationBase<JournalEntryStatus>
 {
-    public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<JournalEntryStatus> builder)
+    public JournalEntryStatusEntityConfiguration(ITenantInfo currentTenant) : base(currentTenant)
     {
-        builder.ToTable("JournalEntryStatus", TinyContext.Default_Schema);
+    }
+
+    public  override void ConfigureEntity(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<JournalEntryStatus> builder)
+    {
+        builder.ToTable(nameof(JournalEntryStatus), TinyContext.DefaultSchema);
 
         builder.HasKey(x => x.Value);
         builder.Property(x => x.Value)

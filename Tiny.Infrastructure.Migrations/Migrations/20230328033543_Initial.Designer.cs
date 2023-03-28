@@ -12,8 +12,8 @@ using Tiny.Infrastructure;
 namespace Tiny.Infrastructure.Migrations.Migrations
 {
     [DbContext(typeof(TinyContext))]
-    [Migration("20230321085013_AddDeletedDeletedAtOnGLAccount")]
-    partial class AddDeletedDeletedAtOnGLAccount
+    [Migration("20230328033543_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -108,6 +108,11 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     b.Property<int>("PostableId")
                         .HasColumnType("int");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AccountingTypeId");
@@ -132,7 +137,7 @@ namespace Tiny.Infrastructure.Migrations.Migrations
 
                     b.HasKey("Value");
 
-                    b.ToTable("Postable", (string)null);
+                    b.ToTable("Postable", "dbo");
 
                     b.HasData(
                         new
@@ -153,14 +158,25 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseHiLo(b.Property<long>("Id"), "EntityFrameworkHiLoSequence");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -181,29 +197,42 @@ namespace Tiny.Infrastructure.Migrations.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseHiLo(b.Property<long>("Id"), "EntityFrameworkHiLoSequence");
 
+                    b.Property<bool>("Deleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("DepartmentId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Description")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(200)")
+                        .HasDefaultValue("");
+
+                    b.Property<int>("JournalEntryStatusId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("PostingDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<long>("_departmentId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("DepartmentId");
-
-                    b.Property<int>("_journalEntryStatusId")
-                        .HasColumnType("int")
-                        .HasColumnName("JournalEntryStatusId");
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("_departmentId");
+                    b.HasIndex("DepartmentId");
 
-                    b.HasIndex("_journalEntryStatusId");
+                    b.HasIndex("JournalEntryStatusId");
 
-                    b.ToTable("JournalEntry");
+                    b.ToTable("JournalEntry", "dbo");
                 });
 
             modelBuilder.Entity("Tiny.Domain.AggregateModels.JournalEntryAggregate.JournalEntryLine", b =>
@@ -215,30 +244,35 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<decimal>("CreditAmount")
+                        .ValueGeneratedOnAdd()
                         .HasPrecision(19, 6)
-                        .HasColumnType("decimal(19,6)");
+                        .HasColumnType("decimal(19,6)")
+                        .HasDefaultValue(0m);
 
                     b.Property<decimal>("DebitAmount")
+                        .ValueGeneratedOnAdd()
                         .HasPrecision(19, 6)
-                        .HasColumnType("decimal(19,6)");
+                        .HasColumnType("decimal(19,6)")
+                        .HasDefaultValue(0m);
 
                     b.Property<string>("Description")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(200)")
+                        .HasDefaultValue("");
+
+                    b.Property<long>("GLAccountId")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("JournalEntryId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("_gLAccountId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("GLAccountId");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("JournalEntryId");
+                    b.HasIndex("GLAccountId");
 
-                    b.HasIndex("_gLAccountId");
+                    b.HasIndex("JournalEntryId");
 
                     b.ToTable("JournalEntryLine", "dbo");
                 });
@@ -288,7 +322,18 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -324,13 +369,13 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                 {
                     b.HasOne("Tiny.Domain.AggregateModels.JournalEntryAggregate.Department", "Department")
                         .WithMany()
-                        .HasForeignKey("_departmentId")
+                        .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Tiny.Domain.AggregateModels.JournalEntryAggregate.JournalEntryStatus", "Status")
                         .WithMany()
-                        .HasForeignKey("_journalEntryStatusId")
+                        .HasForeignKey("JournalEntryStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -341,15 +386,15 @@ namespace Tiny.Infrastructure.Migrations.Migrations
 
             modelBuilder.Entity("Tiny.Domain.AggregateModels.JournalEntryAggregate.JournalEntryLine", b =>
                 {
-                    b.HasOne("Tiny.Domain.AggregateModels.JournalEntryAggregate.JournalEntry", null)
-                        .WithMany("Lines")
-                        .HasForeignKey("JournalEntryId")
+                    b.HasOne("Tiny.Domain.AggregateModels.GLAccountAggregate.GLAccount", "GLAccount")
+                        .WithMany()
+                        .HasForeignKey("GLAccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Tiny.Domain.AggregateModels.GLAccountAggregate.GLAccount", "GLAccount")
-                        .WithMany()
-                        .HasForeignKey("_gLAccountId")
+                    b.HasOne("Tiny.Domain.AggregateModels.JournalEntryAggregate.JournalEntry", null)
+                        .WithMany("Lines")
+                        .HasForeignKey("JournalEntryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

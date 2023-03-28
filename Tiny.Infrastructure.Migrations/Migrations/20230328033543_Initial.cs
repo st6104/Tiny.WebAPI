@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Tiny.Infrastructure.Migrations.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,10 +38,12 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<long>(type: "bigint", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Deleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -63,6 +65,7 @@ namespace Tiny.Infrastructure.Migrations.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Postable",
+                schema: "dbo",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
@@ -80,7 +83,10 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Deleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -89,13 +95,17 @@ namespace Tiny.Infrastructure.Migrations.Migrations
 
             migrationBuilder.CreateTable(
                 name: "JournalEntry",
+                schema: "dbo",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false),
                     PostingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     JournalEntryStatusId = table.Column<int>(type: "int", nullable: false),
                     DepartmentId = table.Column<long>(type: "bigint", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false, defaultValue: ""),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Deleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
@@ -125,15 +135,18 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     PostableId = table.Column<int>(type: "int", nullable: false),
-                    AccountTypeId = table.Column<int>(type: "int", nullable: false),
-                    Balance = table.Column<decimal>(type: "decimal(19,6)", precision: 19, scale: 6, nullable: false, defaultValue: 0m)
+                    AccountingTypeId = table.Column<int>(type: "int", nullable: false),
+                    Balance = table.Column<decimal>(type: "decimal(19,6)", precision: 19, scale: 6, nullable: false, defaultValue: 0m),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Deleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_GLAccount", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GLAccount_AccountingType_AccountTypeId",
-                        column: x => x.AccountTypeId,
+                        name: "FK_GLAccount_AccountingType_AccountingTypeId",
+                        column: x => x.AccountingTypeId,
                         principalSchema: "dbo",
                         principalTable: "AccountingType",
                         principalColumn: "Id",
@@ -141,6 +154,7 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     table.ForeignKey(
                         name: "FK_GLAccount_Postable_PostableId",
                         column: x => x.PostableId,
+                        principalSchema: "dbo",
                         principalTable: "Postable",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -154,9 +168,9 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     GLAccountId = table.Column<long>(type: "bigint", nullable: false),
-                    DebitAmount = table.Column<decimal>(type: "decimal(19,6)", precision: 19, scale: 6, nullable: false),
-                    CreditAmount = table.Column<decimal>(type: "decimal(19,6)", precision: 19, scale: 6, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    DebitAmount = table.Column<decimal>(type: "decimal(19,6)", precision: 19, scale: 6, nullable: false, defaultValue: 0m),
+                    CreditAmount = table.Column<decimal>(type: "decimal(19,6)", precision: 19, scale: 6, nullable: false, defaultValue: 0m),
+                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false, defaultValue: ""),
                     JournalEntryId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -172,6 +186,7 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     table.ForeignKey(
                         name: "FK_JournalEntryLine_JournalEntry_JournalEntryId",
                         column: x => x.JournalEntryId,
+                        principalSchema: "dbo",
                         principalTable: "JournalEntry",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -202,6 +217,7 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                 });
 
             migrationBuilder.InsertData(
+                schema: "dbo",
                 table: "Postable",
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
@@ -218,10 +234,10 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_GLAccount_AccountTypeId",
+                name: "IX_GLAccount_AccountingTypeId",
                 schema: "dbo",
                 table: "GLAccount",
-                column: "AccountTypeId");
+                column: "AccountingTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GLAccount_Code_Name",
@@ -238,11 +254,13 @@ namespace Tiny.Infrastructure.Migrations.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_JournalEntry_DepartmentId",
+                schema: "dbo",
                 table: "JournalEntry",
                 column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_JournalEntry_JournalEntryStatusId",
+                schema: "dbo",
                 table: "JournalEntry",
                 column: "JournalEntryStatusId");
 
@@ -282,14 +300,16 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "JournalEntry");
+                name: "JournalEntry",
+                schema: "dbo");
 
             migrationBuilder.DropTable(
                 name: "AccountingType",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "Postable");
+                name: "Postable",
+                schema: "dbo");
 
             migrationBuilder.DropTable(
                 name: "Department",

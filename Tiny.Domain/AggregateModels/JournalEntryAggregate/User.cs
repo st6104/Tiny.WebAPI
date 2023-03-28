@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace Tiny.Domain.AggregateModels.JournalEntryAggregate;
 
-public class User : Entity
+public class User : SoftDeletableEntity, IHasTenantId
 {
     public string Code { get; }
 

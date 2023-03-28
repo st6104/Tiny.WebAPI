@@ -10,4 +10,16 @@ public sealed class GLAccountValidationError : DomainValidationErrorException
     public GLAccountValidationError(string identifier, string message, Exception? innerException = null) : base(identifier, message, innerException)
     {
     }
+
+    private GLAccountValidationError() : base()
+    {
+    }
+
+    private GLAccountValidationError(string? message) : base(message)
+    {
+    }
+
+    private GLAccountValidationError(string? message, Exception? innerException) : base(message, innerException)
+    {
+    }
 }

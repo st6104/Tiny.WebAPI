@@ -14,4 +14,16 @@ public sealed class JournalEntryValidationError : DomainValidationErrorException
     public JournalEntryValidationError(string identifier, string message, Exception? innerException = null) : base(identifier, message, innerException)
     {
     }
+
+    private JournalEntryValidationError() : base()
+    {
+    }
+
+    private JournalEntryValidationError(string? message) : base(message)
+    {
+    }
+
+    private JournalEntryValidationError(string? message, Exception? innerException) : base(message, innerException)
+    {
+    }
 }

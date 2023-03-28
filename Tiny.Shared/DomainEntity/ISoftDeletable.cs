@@ -9,7 +9,5 @@ public interface ISoftDeletable
 {
     bool Deleted { get; }
 
-    DateTime? DeletedAt { get; }
-
-    void MarkAsDelete();
+    bool TryMarkAsDelete();
 }

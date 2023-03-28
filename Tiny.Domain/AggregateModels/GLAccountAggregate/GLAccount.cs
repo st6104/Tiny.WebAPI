@@ -7,7 +7,7 @@ namespace Tiny.Domain.AggregateModels.GLAccountAggregate;
 /// <summary>
 /// 계정과목
 /// </summary>
-public class GLAccount : Entity, IAggregateRoot
+public class GLAccount : SoftDeletableEntity, IAggregateRoot
 {
     public const int CodeLength = 50;
     public const int NameLength = 100;
@@ -39,16 +39,6 @@ public class GLAccount : Entity, IAggregateRoot
     /// 계정잔액
     /// </summary>
     public decimal Balance { get; private set; }
-
-    /// <summary>
-    /// 삭제되었는지 여부
-    /// </summary>
-    public bool Deleted { get; private set; }
-
-    /// <summary>
-    /// 삭제일시
-    /// </summary>
-    public DateTime? DeletedAt { get; private set; }
 
     public GLAccount(string code, string name, int postableId, int accountingTypeId)
     {
@@ -104,13 +94,12 @@ public class GLAccount : Entity, IAggregateRoot
         return this;
     }
 
-    public void MarkAsDelete()
+    public override bool TryMarkAsDelete()
     {
-        if (IsTransient() || Deleted) return;
+        var markedSuccessed = base.TryMarkAsDelete();
+        if (markedSuccessed)
+            AddDomainEvent(new GLAccountDeletedDomainEvent(this));
 
-        Deleted = true;
-        DeletedAt = DateTime.UtcNow;
-
-        AddDomainEvent(new GLAccountDeletedDomainEvent(this));
+        return markedSuccessed;
     }
 }

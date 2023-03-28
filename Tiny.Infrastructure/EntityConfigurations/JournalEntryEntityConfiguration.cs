@@ -1,12 +1,20 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tiny.Domain.AggregateModels.JournalEntryAggregate;
+using Tiny.Infrastructure.Abstract.MultiTenant;
+using Tiny.Infrastructure.Abstract;
 
 namespace Tiny.Infrastructure.EntityConfigurations;
 
-public class JournalEntryEntityConfiguration : IEntityTypeConfiguration<JournalEntry>
+public class JournalEntryEntityConfiguration : EntityTypeConfigurationBase<JournalEntry>
 {
-    public void Configure(EntityTypeBuilder<JournalEntry> builder)
+    public JournalEntryEntityConfiguration(ITenantInfo currentTenant) : base(currentTenant)
     {
+    }
+
+    public override void ConfigureEntity(EntityTypeBuilder<JournalEntry> builder)
+    {
+        builder.ToTable(nameof(JournalEntry), TinyContext.DefaultSchema);
+
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).ValueGeneratedOnAdd().UseHiLo();
 
@@ -34,7 +42,5 @@ public class JournalEntryEntityConfiguration : IEntityTypeConfiguration<JournalE
         builder.Property(x => x.Description).HasDefaultValue(string.Empty);
 
         builder.Property(x => x.Deleted).HasDefaultValue(false);
-
-        builder.Property(x => x.DeletedAt);
     }
 }

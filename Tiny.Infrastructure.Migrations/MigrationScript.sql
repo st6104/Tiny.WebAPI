@@ -22,9 +22,12 @@ CREATE TABLE [dbo].[AccountingType] (
 GO
 
 CREATE TABLE [dbo].[Department] (
-    [Id] bigint NOT NULL IDENTITY,
+    [Id] bigint NOT NULL,
     [Code] nvarchar(200) NOT NULL,
     [Name] nvarchar(200) NOT NULL,
+    [DeletedAt] datetime2 NULL,
+    [TenantId] nvarchar(200) NOT NULL,
+    [Deleted] bit NOT NULL,
     CONSTRAINT [PK_Department] PRIMARY KEY ([Id])
 );
 GO
@@ -36,7 +39,7 @@ CREATE TABLE [dbo].[JournalEntryStatus] (
 );
 GO
 
-CREATE TABLE [Postable] (
+CREATE TABLE [dbo].[Postable] (
     [Id] int NOT NULL,
     [Name] nvarchar(200) NULL,
     CONSTRAINT [PK_Postable] PRIMARY KEY ([Id])
@@ -47,16 +50,22 @@ CREATE TABLE [dbo].[User] (
     [Id] bigint NOT NULL,
     [Code] nvarchar(200) NOT NULL,
     [Name] nvarchar(200) NOT NULL,
+    [DeletedAt] datetime2 NULL,
+    [TenantId] nvarchar(200) NOT NULL,
+    [Deleted] bit NOT NULL,
     CONSTRAINT [PK_User] PRIMARY KEY ([Id])
 );
 GO
 
-CREATE TABLE [JournalEntry] (
+CREATE TABLE [dbo].[JournalEntry] (
     [Id] bigint NOT NULL,
     [PostingDate] datetime2 NOT NULL,
     [JournalEntryStatusId] int NOT NULL,
     [DepartmentId] bigint NOT NULL,
-    [Description] nvarchar(200) NOT NULL,
+    [Description] nvarchar(200) NOT NULL DEFAULT N'',
+    [DeletedAt] datetime2 NULL,
+    [TenantId] nvarchar(200) NOT NULL,
+    [Deleted] bit NOT NULL DEFAULT CAST(0 AS bit),
     CONSTRAINT [PK_JournalEntry] PRIMARY KEY ([Id]),
     CONSTRAINT [FK_JournalEntry_Department_DepartmentId] FOREIGN KEY ([DepartmentId]) REFERENCES [dbo].[Department] ([Id]) ON DELETE CASCADE,
     CONSTRAINT [FK_JournalEntry_JournalEntryStatus_JournalEntryStatusId] FOREIGN KEY ([JournalEntryStatusId]) REFERENCES [dbo].[JournalEntryStatus] ([Id]) ON DELETE CASCADE
@@ -68,24 +77,27 @@ CREATE TABLE [dbo].[GLAccount] (
     [Code] nvarchar(50) NOT NULL,
     [Name] nvarchar(100) NOT NULL,
     [PostableId] int NOT NULL,
-    [AccountTypeId] int NOT NULL,
+    [AccountingTypeId] int NOT NULL,
     [Balance] decimal(19,6) NOT NULL DEFAULT 0.0,
+    [DeletedAt] datetime2 NULL,
+    [TenantId] nvarchar(200) NOT NULL,
+    [Deleted] bit NOT NULL DEFAULT CAST(0 AS bit),
     CONSTRAINT [PK_GLAccount] PRIMARY KEY ([Id]),
-    CONSTRAINT [FK_GLAccount_AccountingType_AccountTypeId] FOREIGN KEY ([AccountTypeId]) REFERENCES [dbo].[AccountingType] ([Id]) ON DELETE CASCADE,
-    CONSTRAINT [FK_GLAccount_Postable_PostableId] FOREIGN KEY ([PostableId]) REFERENCES [Postable] ([Id]) ON DELETE CASCADE
+    CONSTRAINT [FK_GLAccount_AccountingType_AccountingTypeId] FOREIGN KEY ([AccountingTypeId]) REFERENCES [dbo].[AccountingType] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_GLAccount_Postable_PostableId] FOREIGN KEY ([PostableId]) REFERENCES [dbo].[Postable] ([Id]) ON DELETE CASCADE
 );
 GO
 
 CREATE TABLE [dbo].[JournalEntryLine] (
     [Id] bigint NOT NULL IDENTITY,
     [GLAccountId] bigint NOT NULL,
-    [DebitAmount] decimal(19,6) NOT NULL,
-    [CreditAmount] decimal(19,6) NOT NULL,
-    [Description] nvarchar(200) NOT NULL,
+    [DebitAmount] decimal(19,6) NOT NULL DEFAULT 0.0,
+    [CreditAmount] decimal(19,6) NOT NULL DEFAULT 0.0,
+    [Description] nvarchar(200) NOT NULL DEFAULT N'',
     [JournalEntryId] bigint NOT NULL,
     CONSTRAINT [PK_JournalEntryLine] PRIMARY KEY ([Id]),
     CONSTRAINT [FK_JournalEntryLine_GLAccount_GLAccountId] FOREIGN KEY ([GLAccountId]) REFERENCES [dbo].[GLAccount] ([Id]) ON DELETE CASCADE,
-    CONSTRAINT [FK_JournalEntryLine_JournalEntry_JournalEntryId] FOREIGN KEY ([JournalEntryId]) REFERENCES [JournalEntry] ([Id]) ON DELETE CASCADE
+    CONSTRAINT [FK_JournalEntryLine_JournalEntry_JournalEntryId] FOREIGN KEY ([JournalEntryId]) REFERENCES [dbo].[JournalEntry] ([Id]) ON DELETE CASCADE
 );
 GO
 
@@ -111,19 +123,19 @@ IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name
     SET IDENTITY_INSERT [dbo].[JournalEntryStatus] OFF;
 GO
 
-IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[Postable]'))
-    SET IDENTITY_INSERT [Postable] ON;
-INSERT INTO [Postable] ([Id], [Name])
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[dbo].[Postable]'))
+    SET IDENTITY_INSERT [dbo].[Postable] ON;
+INSERT INTO [dbo].[Postable] ([Id], [Name])
 VALUES (1, N'Yes'),
 (2, N'No');
-IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[Postable]'))
-    SET IDENTITY_INSERT [Postable] OFF;
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name') AND [object_id] = OBJECT_ID(N'[dbo].[Postable]'))
+    SET IDENTITY_INSERT [dbo].[Postable] OFF;
 GO
 
 CREATE UNIQUE INDEX [IX_Department_Code] ON [dbo].[Department] ([Code]);
 GO
 
-CREATE INDEX [IX_GLAccount_AccountTypeId] ON [dbo].[GLAccount] ([AccountTypeId]);
+CREATE INDEX [IX_GLAccount_AccountingTypeId] ON [dbo].[GLAccount] ([AccountingTypeId]);
 GO
 
 CREATE UNIQUE INDEX [IX_GLAccount_Code_Name] ON [dbo].[GLAccount] ([Code], [Name]);
@@ -132,10 +144,10 @@ GO
 CREATE INDEX [IX_GLAccount_PostableId] ON [dbo].[GLAccount] ([PostableId]);
 GO
 
-CREATE INDEX [IX_JournalEntry_DepartmentId] ON [JournalEntry] ([DepartmentId]);
+CREATE INDEX [IX_JournalEntry_DepartmentId] ON [dbo].[JournalEntry] ([DepartmentId]);
 GO
 
-CREATE INDEX [IX_JournalEntry_JournalEntryStatusId] ON [JournalEntry] ([JournalEntryStatusId]);
+CREATE INDEX [IX_JournalEntry_JournalEntryStatusId] ON [dbo].[JournalEntry] ([JournalEntryStatusId]);
 GO
 
 CREATE INDEX [IX_JournalEntryLine_GLAccountId] ON [dbo].[JournalEntryLine] ([GLAccountId]);
@@ -148,97 +160,7 @@ CREATE UNIQUE INDEX [IX_User_Code] ON [dbo].[User] ([Code]);
 GO
 
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20230321015239_InitialCreate', N'7.0.4');
-GO
-
-COMMIT;
-GO
-
-BEGIN TRANSACTION;
-GO
-
-ALTER TABLE [dbo].[GLAccount] DROP CONSTRAINT [FK_GLAccount_AccountingType_AccountTypeId];
-GO
-
-EXEC sp_rename N'[dbo].[GLAccount].[AccountTypeId]', N'AccountingTypeId', N'COLUMN';
-GO
-
-EXEC sp_rename N'[dbo].[GLAccount].[IX_GLAccount_AccountTypeId]', N'IX_GLAccount_AccountingTypeId', N'INDEX';
-GO
-
-ALTER TABLE [dbo].[GLAccount] ADD CONSTRAINT [FK_GLAccount_AccountingType_AccountingTypeId] FOREIGN KEY ([AccountingTypeId]) REFERENCES [dbo].[AccountingType] ([Id]) ON DELETE CASCADE;
-GO
-
-INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20230321081222_Second', N'7.0.4');
-GO
-
-COMMIT;
-GO
-
-BEGIN TRANSACTION;
-GO
-
-ALTER TABLE [dbo].[GLAccount] ADD [Deleted] bit NOT NULL DEFAULT CAST(0 AS bit);
-GO
-
-ALTER TABLE [dbo].[GLAccount] ADD [DeletedAt] datetime2 NULL;
-GO
-
-INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20230321085013_AddDeletedDeletedAtOnGLAccount', N'7.0.4');
-GO
-
-COMMIT;
-GO
-
-BEGIN TRANSACTION;
-GO
-
-DECLARE @var0 sysname;
-SELECT @var0 = [d].[name]
-FROM [sys].[default_constraints] [d]
-INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-WHERE ([d].[parent_object_id] = OBJECT_ID(N'[dbo].[JournalEntryLine]') AND [c].[name] = N'Description');
-IF @var0 IS NOT NULL EXEC(N'ALTER TABLE [dbo].[JournalEntryLine] DROP CONSTRAINT [' + @var0 + '];');
-ALTER TABLE [dbo].[JournalEntryLine] ADD DEFAULT N'' FOR [Description];
-GO
-
-DECLARE @var1 sysname;
-SELECT @var1 = [d].[name]
-FROM [sys].[default_constraints] [d]
-INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-WHERE ([d].[parent_object_id] = OBJECT_ID(N'[dbo].[JournalEntryLine]') AND [c].[name] = N'DebitAmount');
-IF @var1 IS NOT NULL EXEC(N'ALTER TABLE [dbo].[JournalEntryLine] DROP CONSTRAINT [' + @var1 + '];');
-ALTER TABLE [dbo].[JournalEntryLine] ADD DEFAULT 0.0 FOR [DebitAmount];
-GO
-
-DECLARE @var2 sysname;
-SELECT @var2 = [d].[name]
-FROM [sys].[default_constraints] [d]
-INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-WHERE ([d].[parent_object_id] = OBJECT_ID(N'[dbo].[JournalEntryLine]') AND [c].[name] = N'CreditAmount');
-IF @var2 IS NOT NULL EXEC(N'ALTER TABLE [dbo].[JournalEntryLine] DROP CONSTRAINT [' + @var2 + '];');
-ALTER TABLE [dbo].[JournalEntryLine] ADD DEFAULT 0.0 FOR [CreditAmount];
-GO
-
-DECLARE @var3 sysname;
-SELECT @var3 = [d].[name]
-FROM [sys].[default_constraints] [d]
-INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
-WHERE ([d].[parent_object_id] = OBJECT_ID(N'[JournalEntry]') AND [c].[name] = N'Description');
-IF @var3 IS NOT NULL EXEC(N'ALTER TABLE [JournalEntry] DROP CONSTRAINT [' + @var3 + '];');
-ALTER TABLE [JournalEntry] ADD DEFAULT N'' FOR [Description];
-GO
-
-ALTER TABLE [JournalEntry] ADD [Deleted] bit NOT NULL DEFAULT CAST(0 AS bit);
-GO
-
-ALTER TABLE [JournalEntry] ADD [DeletedAt] datetime2 NULL;
-GO
-
-INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20230322034617_AddSoftDeleteColumnsOnJournalEntry', N'7.0.4');
+VALUES (N'20230328033543_Initial', N'7.0.4');
 GO
 
 COMMIT;
