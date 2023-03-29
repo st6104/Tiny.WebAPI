@@ -11,11 +11,11 @@ public class TinyContextDesignFactory : IDesignTimeDbContextFactory<TinyContext>
         return new TinyContext(new FakeMediator(), new FakeLoggerFactory(), new FakeCurrentTenant());
     }
 
-    class FakeCurrentTenant : ICurrentTenantInfo
+    private class FakeCurrentTenant : ICurrentTenantInfo
     {
         public ITenantInfo Current { get => new FakeTenantInfo(); set { } }
 
-        class FakeTenantInfo : ITenantInfo
+        private class FakeTenantInfo : ITenantInfo
         {
             public string Id => string.Empty;
 
@@ -26,8 +26,7 @@ public class TinyContextDesignFactory : IDesignTimeDbContextFactory<TinyContext>
     }
 
 
-
-    class FakeLoggerFactory : ILoggerFactory
+    private class FakeLoggerFactory : ILoggerFactory
     {
         public void AddProvider(ILoggerProvider provider)
         {
@@ -43,7 +42,7 @@ public class TinyContextDesignFactory : IDesignTimeDbContextFactory<TinyContext>
         }
     }
 
-    class FakeLogger : ILogger
+    private class FakeLogger : ILogger
     {
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull
         {
@@ -55,14 +54,16 @@ public class TinyContextDesignFactory : IDesignTimeDbContextFactory<TinyContext>
             return true;
         }
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
+            Func<TState, Exception?, string> formatter)
         {
         }
     }
 
-    class FakeMediator : IMediator
+    private class FakeMediator : IMediator
     {
-        public IAsyncEnumerable<TResponse> CreateStream<TResponse>(IStreamRequest<TResponse> request, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<TResponse> CreateStream<TResponse>(IStreamRequest<TResponse> request,
+            CancellationToken cancellationToken = default)
         {
             return default!;
         }
@@ -77,17 +78,20 @@ public class TinyContextDesignFactory : IDesignTimeDbContextFactory<TinyContext>
             return Task.CompletedTask;
         }
 
-        public Task Publish<TNotification>(TNotification notification, CancellationToken cancellationToken = default) where TNotification : INotification
+        public Task Publish<TNotification>(TNotification notification, CancellationToken cancellationToken = default)
+            where TNotification : INotification
         {
             return Task.CompletedTask;
         }
 
-        public Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
+        public Task<TResponse> Send<TResponse>(IRequest<TResponse> request,
+            CancellationToken cancellationToken = default)
         {
             return Task.FromResult<TResponse>(default!);
         }
 
-        public Task Send<TRequest>(TRequest request, CancellationToken cancellationToken = default) where TRequest : IRequest
+        public Task Send<TRequest>(TRequest request, CancellationToken cancellationToken = default)
+            where TRequest : IRequest
         {
             return Task.CompletedTask;
         }

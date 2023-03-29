@@ -1,5 +1,6 @@
 using System.Data.SqlTypes;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Tiny.Api.Conventions;
 using Tiny.Api.Middlewares;
 using Tiny.Api.OperationFilters;
 
@@ -9,7 +10,7 @@ internal static class StartupExtension
 {
     public static WebApplicationBuilder AddServices(this WebApplicationBuilder builder)
     {
-        builder.Services.AddControllers(mvcOptions => mvcOptions.SetResultConvention());
+        builder.Services.AddControllers(mvcOptions => mvcOptions.Conventions.Add(new TinyApiConvention()));
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(config =>
         {

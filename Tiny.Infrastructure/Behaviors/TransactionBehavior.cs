@@ -3,7 +3,8 @@ using Tiny.Shared.Extensions;
 
 namespace Tiny.Infrastructure.Behaviors;
 
-public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : IRequest<TResponse>
 {
     private readonly TinyContext _dbContext;
     private readonly ILogger<TransactionBehavior<TRequest, TResponse>> _logger;
@@ -13,7 +14,9 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
         _dbContext = dbContext;
         _logger = logger;
     }
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
     {
         var response = default(TResponse);
 
@@ -22,7 +25,9 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
         try
         {
             if (_dbContext.HasActiveTransaction)
+            {
                 return await next();
+            }
 
             var stratagy = _dbContext.Database.CreateExecutionStrategy();
 
@@ -30,17 +35,19 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
             {
                 await using var transaction = await _dbContext.BeginTransactionAsync();
                 var transactionId = transaction.TransactionId;
-                _logger.LogInformation("----- Begin transaction {TransactionId} for {CommandName} ({@Command})", transaction.TransactionId, typeName, request);
+                _logger.LogInformation("----- Begin transaction {TransactionId} for {CommandName} ({@Command})",
+                    transaction.TransactionId, typeName, request);
 
                 response = await next();
 
                 await _dbContext.CommitTransactionAsync(transaction);
-                _logger.LogInformation("----- Commit transaction {TransactionId} for {CommandName}", transaction.TransactionId, typeName);
+                _logger.LogInformation("----- Commit transaction {TransactionId} for {CommandName}",
+                    transaction.TransactionId, typeName);
             });
 
             return response!;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex, "ERROR Handling transaction for {CommandName} ({@Command})", typeName, request);
             throw;

@@ -9,18 +9,17 @@ public class AccountingTypeEntityConfiguration : EntityTypeConfigurationBase<Acc
 {
     public AccountingTypeEntityConfiguration(ITenantInfo tenantInfo) : base(tenantInfo)
     {
-        
     }
 
-    public override void ConfigureEntity(EntityTypeBuilder<AccountingType> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<AccountingType> builder)
     {
         builder.ToTable("AccountingType", TinyContext.DefaultSchema);
 
         builder.HasKey(entity => entity.Value);
 
         builder.Property(entity => entity.Value)
-                .HasColumnName("Id")
-                .ValueGeneratedNever();
+            .HasColumnName("Id")
+            .ValueGeneratedNever();
 
         builder.Property(x => x.Name);
 

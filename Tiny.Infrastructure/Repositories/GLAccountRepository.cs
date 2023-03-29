@@ -10,12 +10,13 @@ namespace Tiny.Infrastructure.Repositories;
 public class GLAccountRepository : IGLAccountRepository
 {
     private readonly TinyContext _dbContext;
-    public IUnitOfWork UnitOfWork => _dbContext;
 
     public GLAccountRepository(TinyContext dbContext)
     {
-        this._dbContext = dbContext;
+        _dbContext = dbContext;
     }
+
+    public IUnitOfWork UnitOfWork => _dbContext;
 
     public async Task AddAsync(GLAccount glAccount, CancellationToken cancellationToken)
     {
@@ -32,7 +33,7 @@ public class GLAccountRepository : IGLAccountRepository
         }, cancellationToken);
     }
 
-     public async Task DeleteAsync(long id, CancellationToken cancellationToken)
+    public async Task DeleteAsync(long id, CancellationToken cancellationToken)
     {
         var glAccount = await GetOneAsync(new GLAccountByIdSpec(id), cancellationToken);
         glAccount.TryMarkAsDelete();
@@ -46,7 +47,12 @@ public class GLAccountRepository : IGLAccountRepository
     public async Task<GLAccount> GetOneAsync(GLAccountByIdSpec spec, CancellationToken cancellationToken)
     {
         var glAccount = await GetCore(spec).FirstOrDefaultAsync(cancellationToken);
-        return glAccount ?? throw new IdNotFoundException(spec.Id);
+        return glAccount ?? throw new EntityIdNotFoundException(spec.Id);
+    }
+
+    public Task<bool> IsSatisfiedByAsync(ISpecification<GLAccount> specification, CancellationToken cancellationToken)
+    {
+        return _dbContext.GLAccount.WithSpecification(specification).AnyAsync(cancellationToken);
     }
 
     public IQueryable<GLAccount> GetCore(ISpecification<GLAccount>? spec)
@@ -54,13 +60,10 @@ public class GLAccountRepository : IGLAccountRepository
         var query = _dbContext.GLAccount.AsQueryable();
 
         if (spec != null)
+        {
             query = query.WithSpecification(spec);
+        }
 
         return query;
-    }
-
-    public Task<bool> IsSatisfiedByAsync(ISpecification<GLAccount> specification, CancellationToken cancellationToken)
-    {
-        return _dbContext.GLAccount.WithSpecification(specification).AnyAsync(cancellationToken);
     }
 }

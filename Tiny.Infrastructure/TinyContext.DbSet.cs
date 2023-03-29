@@ -6,6 +6,7 @@ namespace Tiny.Infrastructure;
 partial class TinyContext
 {
     #region DbSets
+
     public virtual DbSet<AccountingType> AccountingType => Set<AccountingType>();
     public virtual DbSet<Postable> Postable => Set<Postable>();
     public virtual DbSet<GLAccount> GLAccount => Set<GLAccount>();
@@ -14,5 +15,6 @@ partial class TinyContext
     public virtual DbSet<JournalEntryStatus> JournalEntryStatus => Set<JournalEntryStatus>();
     public virtual DbSet<JournalEntry> JournalEntry => Set<JournalEntry>();
     public virtual DbSet<JournalEntryLine> JournalEntryLine => Set<JournalEntryLine>();
+
     #endregion
 }

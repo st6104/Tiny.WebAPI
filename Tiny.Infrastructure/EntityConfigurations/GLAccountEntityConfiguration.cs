@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tiny.Domain.AggregateModels.GLAccountAggregate;
-using Tiny.Infrastructure.Abstract.MultiTenant;
 using Tiny.Infrastructure.Abstract;
+using Tiny.Infrastructure.Abstract.MultiTenant;
 
 namespace Tiny.Infrastructure.EntityConfigurations;
 
@@ -12,7 +12,7 @@ public class GLAccountEntityConfiguration : EntityTypeConfigurationBase<GLAccoun
     {
     }
 
-    public override void ConfigureEntity(EntityTypeBuilder<GLAccount> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<GLAccount> builder)
     {
         // 테이블 이름 설정
         builder.ToTable(nameof(GLAccount), TinyContext.DefaultSchema);
@@ -34,21 +34,21 @@ public class GLAccountEntityConfiguration : EntityTypeConfigurationBase<GLAccoun
         builder.Property(x => x.PostableId).IsRequired();
 
         builder.HasOne(x => x.Postable)
-                .WithMany()
-                .HasForeignKey(x => x.PostableId)
-                .IsRequired();
+            .WithMany()
+            .HasForeignKey(x => x.PostableId)
+            .IsRequired();
 
         // _accountTypeId 멤버변수를 NotNull로 설정
         builder.Property(x => x.AccountingTypeId).IsRequired();
 
         builder.HasOne(x => x.AccountingType)
-                .WithMany()
-                .HasForeignKey(x => x.AccountingTypeId)
-                .IsRequired();
+            .WithMany()
+            .HasForeignKey(x => x.AccountingTypeId)
+            .IsRequired();
 
         // Balance 필드를 기본값을 0으로 설정하고 NotNull로 설정
         builder.Property(x => x.Balance)
-                .HasDefaultValue(decimal.Zero);
+            .HasDefaultValue(decimal.Zero);
 
         builder.Property(x => x.Deleted).HasDefaultValue(false);
     }

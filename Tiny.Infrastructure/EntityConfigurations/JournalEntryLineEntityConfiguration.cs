@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tiny.Domain.AggregateModels.JournalEntryAggregate;
-using Tiny.Infrastructure.Abstract.MultiTenant;
 using Tiny.Infrastructure.Abstract;
+using Tiny.Infrastructure.Abstract.MultiTenant;
 
 namespace Tiny.Infrastructure.EntityConfigurations;
 
@@ -11,7 +11,7 @@ public class JournalEntryLineEntityConfiguration : EntityTypeConfigurationBase<J
     {
     }
 
-    public override void ConfigureEntity(EntityTypeBuilder<JournalEntryLine> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<JournalEntryLine> builder)
     {
         builder.ToTable(nameof(JournalEntryLine), TinyContext.DefaultSchema);
 
@@ -19,12 +19,12 @@ public class JournalEntryLineEntityConfiguration : EntityTypeConfigurationBase<J
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
         builder.Property(x => x.GLAccountId)
-                .IsRequired();
+            .IsRequired();
 
         builder.HasOne(x => x.GLAccount)
-                .WithMany()
-                .HasForeignKey(x => x.GLAccountId)
-                .IsRequired();
+            .WithMany()
+            .HasForeignKey(x => x.GLAccountId)
+            .IsRequired();
 
         builder.Property(x => x.DebitAmount).HasDefaultValue(decimal.Zero);
 

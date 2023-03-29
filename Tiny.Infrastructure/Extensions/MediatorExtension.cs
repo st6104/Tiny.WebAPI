@@ -5,9 +5,10 @@ namespace Tiny.Infrastructure.Extensions;
 
 internal static class MediatorExtension
 {
-    public static async Task DispatchDomainEventsAsync(this IMediator mediator, IDomainEventStore eventStore, CancellationToken cancellationToken)
+    public static async Task DispatchDomainEventsAsync(this IMediator mediator, IDomainEventStore eventStore,
+        CancellationToken cancellationToken)
     {
         var domainEvents = eventStore.GetAll();
-        await domainEvents.ForEachAsync(async domainEvent => await mediator.Publish(domainEvent), cancellationToken: cancellationToken);
+        await domainEvents.ForEachAsync(async domainEvent => await mediator.Publish(domainEvent), cancellationToken);
     }
 }

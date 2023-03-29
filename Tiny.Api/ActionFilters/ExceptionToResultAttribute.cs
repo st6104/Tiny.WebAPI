@@ -10,6 +10,7 @@ using Tiny.Shared.Exceptions;
 
 namespace Tiny.Api.ActionFilters;
 
+[Obsolete("이제 사용하지 않음", true)]
 public class ExceptionToResultAttribute : TranslateResultToActionResultAttribute
 {
     public override void OnActionExecuted(ActionExecutedContext context)
@@ -30,7 +31,7 @@ public class ExceptionToResultAttribute : TranslateResultToActionResultAttribute
     {
         result = null;
 
-        if (ex is IdNotFoundException)
+        if (ex is EntityIdNotFoundException)
             result = Result.NotFound();
         else if (ex is ValidationException validationException)
             result = Result.Invalid(validationException.Errors.ToValidationErrors().ToList());

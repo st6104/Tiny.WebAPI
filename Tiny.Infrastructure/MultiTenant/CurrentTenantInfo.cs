@@ -2,17 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tiny.Infrastructure.Abstract.MultiTenant;
 
-namespace Tiny.Infrastructure.MultiTenant
+namespace Tiny.Infrastructure.MultiTenant;
+
+public class CurrentTenantInfo : ICurrentTenantInfo
 {
-    public class CurrentTenantInfo : ICurrentTenantInfo
-    {
-        public ITenantInfo Current { get; set; } = default!;
-    }
+    public ITenantInfo Current { get; set; } = default!;
 }

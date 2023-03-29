@@ -7,6 +7,10 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <NoWarn>1701;1702;IL2121;CS1591</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Ardalis.Result.AspNetCore" Version="7.0.0" />
     <PackageReference Include="Ardalis.Result.FluentValidation" Version="7.0.0" />

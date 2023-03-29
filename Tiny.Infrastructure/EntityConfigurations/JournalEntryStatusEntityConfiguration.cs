@@ -1,6 +1,7 @@
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tiny.Domain.AggregateModels.JournalEntryAggregate;
-using Tiny.Infrastructure.Abstract.MultiTenant;
 using Tiny.Infrastructure.Abstract;
+using Tiny.Infrastructure.Abstract.MultiTenant;
 
 namespace Tiny.Infrastructure.EntityConfigurations;
 
@@ -10,14 +11,14 @@ public class JournalEntryStatusEntityConfiguration : EntityTypeConfigurationBase
     {
     }
 
-    public  override void ConfigureEntity(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<JournalEntryStatus> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<JournalEntryStatus> builder)
     {
         builder.ToTable(nameof(JournalEntryStatus), TinyContext.DefaultSchema);
 
         builder.HasKey(x => x.Value);
         builder.Property(x => x.Value)
-                    .HasColumnName("Id")
-                    .ValueGeneratedNever();
+            .HasColumnName("Id")
+            .ValueGeneratedNever();
 
         builder.Property(x => x.Name);
 

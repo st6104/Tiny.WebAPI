@@ -11,9 +11,9 @@ internal static class ModelConfigurationBuilderExtension
         builder.IgnoreAny<IReadOnlyList<IDomainEvent>>();
 
         builder.Properties<decimal>()
-                            .HavePrecision(Constraint.Precision.Precision, Constraint.Precision.Scale);
+            .HavePrecision(Constraint.Precision.Precision, Constraint.Precision.Scale);
 
         builder.Properties<string>()
-                            .HaveMaxLength(Constraint.MaxLength);
+            .HaveMaxLength(Constraint.MaxLength);
     }
 }

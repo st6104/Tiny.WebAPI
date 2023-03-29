@@ -24,7 +24,7 @@ public class MultiTenantMiddleware
         }
         else
         {
-            throw new TenantNotFoundException(tenantId);
+            throw new TenantNotFoundException(tenantId, $"Can not found Tenant Id({tenantId}).");
         }
     }
 }

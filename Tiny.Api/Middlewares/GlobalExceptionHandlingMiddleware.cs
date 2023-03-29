@@ -1,15 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Ardalis.Result;
+using Tiny.Infrastructure.Abstract.Exceptions;
+using Tiny.Shared.Exceptions;
 
 namespace Tiny.Api.Middlewares;
 
 public class GlobalExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
+    private const string ResponseContentTypeToJson = "appliction/json";
 
     public GlobalExceptionHandlingMiddleware(RequestDelegate next)
     {
@@ -22,13 +22,26 @@ public class GlobalExceptionHandlingMiddleware
         {
             await _next(context);
         }
+        catch (TenantNotFoundException tenantNotFoundException)
+        {
+            context.Response.ContentType = ResponseContentTypeToJson;
+            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            await context.Response.WriteAsync(tenantNotFoundException.Message);
+        }
+        catch (EntityIdNotFoundException entityIdNotFoundExcption)
+        {//TODO: 예외별 응답객체 생성 로직 작성(EntityIdNotFoundException)
+
+        }
+        catch (DomainValidationErrorException validationErrorException)
+        {//TODO: 예외별 응답객체 생성 로직 작성(DomainValidationErrorException)
+            
+        }
         catch (Exception ex)
         {
-            var response = context.Response;
-            response.ContentType = "application/json";
-
+            context.Response.ContentType = ResponseContentTypeToJson;
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             var result = Result.Error(ex.Message);
-            await response.WriteAsync(JsonSerializer.Serialize(result));
+            await context.Response.WriteAsync(JsonSerializer.Serialize(result));
         }
     }
 }
