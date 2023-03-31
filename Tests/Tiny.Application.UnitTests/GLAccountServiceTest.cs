@@ -1,7 +1,5 @@
 ﻿using Tiny.Application.DomainServices;
 using Tiny.Application.UnitTests.Mocks;
-using Tiny.Domain.AggregateModels.GLAccountAggregate;
-using Tiny.Domain.AggregateModels.GLAccountAggregate.Services;
 using Tiny.Domain.AggregateModels.GLAccountAggregate.Specifications;
 using Tiny.Domain.Exceptions;
 using UnitTest.Common;

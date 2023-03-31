@@ -1,8 +1,6 @@
-using System.Data;
 using FluentValidation;
 using Tiny.Application.Handlers.Commands;
 using Tiny.Domain.AggregateModels.GLAccountAggregate;
-using Tiny.Domain.AggregateModels.GLAccountAggregate.Services;
 
 namespace Tiny.Application.Validations;
 

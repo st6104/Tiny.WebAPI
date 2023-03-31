@@ -9,27 +9,25 @@ namespace Tiny.Infrastructure.Repositories;
 
 public class GLAccountRepository : IGLAccountRepository
 {
-    private readonly TinyContext _dbContext;
+    private readonly TinyDbContext _dbDbContext;
 
-    public GLAccountRepository(TinyContext dbContext)
+    public GLAccountRepository(TinyDbContext dbDbContext)
     {
-        _dbContext = dbContext;
+        _dbDbContext = dbDbContext;
     }
 
-    public IUnitOfWork UnitOfWork => _dbContext;
+    public IUnitOfWork UnitOfWork => _dbDbContext;
 
     public async Task AddAsync(GLAccount glAccount, CancellationToken cancellationToken)
     {
-        await _dbContext.AddAsync(glAccount, cancellationToken);
+        await _dbDbContext.AddAsync(glAccount, cancellationToken);
     }
 
     public async Task UpdateAsync(GLAccount glAccount, CancellationToken cancellationToken)
     {
         await Task.Run(() =>
         {
-            var entry = _dbContext.Entry(glAccount);
-
-            _dbContext.GLAccount.Attach(glAccount).State = EntityState.Modified;
+            _dbDbContext.GLAccount.Attach(glAccount).State = EntityState.Modified;
         }, cancellationToken);
     }
 
@@ -52,12 +50,12 @@ public class GLAccountRepository : IGLAccountRepository
 
     public Task<bool> IsSatisfiedByAsync(ISpecification<GLAccount> specification, CancellationToken cancellationToken)
     {
-        return _dbContext.GLAccount.WithSpecification(specification).AnyAsync(cancellationToken);
+        return _dbDbContext.GLAccount.WithSpecification(specification).AnyAsync(cancellationToken);
     }
 
     public IQueryable<GLAccount> GetCore(ISpecification<GLAccount>? spec)
     {
-        var query = _dbContext.GLAccount.AsQueryable();
+        var query = _dbDbContext.GLAccount.AsQueryable();
 
         if (spec != null)
         {

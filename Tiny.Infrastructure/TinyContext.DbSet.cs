@@ -3,7 +3,7 @@ using Tiny.Domain.AggregateModels.JournalEntryAggregate;
 
 namespace Tiny.Infrastructure;
 
-partial class TinyContext
+partial class TinyDbContext
 {
     #region DbSets
 

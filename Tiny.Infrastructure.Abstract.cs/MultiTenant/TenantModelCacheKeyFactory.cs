@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace Tiny.Infrastructure.DbContextCustomServices;
+namespace Tiny.Infrastructure.Abstract.MultiTenant;
 
 public class TenantModelCacheKeyFactory : IModelCacheKeyFactory
 {
@@ -23,7 +23,7 @@ public class TenantModelCacheKey : ModelCacheKey
 
     public TenantModelCacheKey(DbContext context, bool designTime) : base(context, designTime)
     {
-        _tenantId = (context as TinyContext)?.TenantId ?? string.Empty;
+        _tenantId = (context as MultiTenantApplicationDbContext)?.TenantId ?? string.Empty;
     }
 
     protected override bool Equals(ModelCacheKey other)

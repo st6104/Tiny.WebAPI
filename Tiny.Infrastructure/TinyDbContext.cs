@@ -4,8 +4,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Tiny.Infrastructure.Abstract.MultiTenant;
-using Tiny.Infrastructure.Abstract.SoftDelete;
-using Tiny.Infrastructure.DbContextCustomServices;
 using Tiny.Infrastructure.Exceptions;
 using Tiny.Infrastructure.Extensions;
 using Tiny.Shared.DomainEntity;
@@ -14,98 +12,42 @@ using Tiny.Shared.Repository;
 
 namespace Tiny.Infrastructure;
 
-public partial class TinyContext : DbContext, IUnitOfWork, IDomainEventStore
+public partial class TinyDbContext : MultiTenantApplicationDbContext, IUnitOfWork, IDomainEventStore
 {
     public const string DefaultSchema = "dbo";
     private const string MigrationAssembly = "Tiny.Infrastructure.Migrations";
     private const int RetryCount = 3;
-    private readonly ICurrentTenantInfo _currentTanent;
-    private readonly ILoggerFactory _loggerFactory;
 
     private readonly IMediator _mediator;
     private IDbContextTransaction? _currentTransaction;
 
-    public TinyContext(IMediator mediator, ILoggerFactory loggerFactory, ICurrentTenantInfo currentTanent)
+    public TinyDbContext(IMediator mediator, ILoggerFactory loggerFactory, IMultiTenantService multiTanentService) : base(multiTanentService, loggerFactory)
     {
-        _loggerFactory = loggerFactory;
-        _currentTanent = currentTanent;
         _mediator = mediator;
     }
 
-    public string TenantId => _currentTanent.Current.Id;
-
     public bool HasActiveTransaction => _currentTransaction != null;
-
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        FillTenantIdToAddedEntities();
-        FillDeletedAtToDeletedEntities();
-
-        return base.SaveChangesAsync(cancellationToken);
-    }
 
     #region IUnitOfWork Implements
 
     public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
     {
         await _mediator.DispatchDomainEventsAsync(this, cancellationToken);
-
         await SaveChangesAsync(cancellationToken);
-
         return true;
     }
 
     #endregion
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    protected override void ActionSqlServerOptions(SqlServerDbContextOptionsBuilder builder)
     {
-        if (optionsBuilder.IsConfigured)
-        {
-            return;
-        }
-
-        optionsBuilder.UseSqlServer(_currentTanent.Current.ConnectionString, options =>
-            {
-                options.EnableRetryOnFailure(RetryCount, TimeSpan.FromSeconds(5), null);
-                options.MigrationsAssembly(MigrationAssembly);
-            })
-            .ReplaceService<IModelCacheKeyFactory, TenantModelCacheKeyFactory>();
-
-        optionsBuilder.UseLoggerFactory(_loggerFactory);
+        builder.EnableRetryOnFailure(RetryCount, TimeSpan.FromSeconds(5), null);
+        builder.MigrationsAssembly(MigrationAssembly);
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         configurationBuilder.SetPreconventions();
-    }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.ApplyEntityConfigurationsFromAssemblyContaining<TinyContext>(_currentTanent.Current);
-    }
-
-    private void FillDeletedAtToDeletedEntities()
-    {
-        var addedOrModifiedEntityStatus = new[] { EntityState.Added, EntityState.Modified };
-        var addedOrModifiedSoftDeleteEntries = ChangeTracker.Entries<ISoftDeletable>()
-            .Where(entry => addedOrModifiedEntityStatus.Contains(entry.State)
-                            && entry.Entity.Deleted)
-            .ToList();
-
-        addedOrModifiedSoftDeleteEntries.ForEach(entry =>
-        {
-            entry.Property(SoftDeleteFieldNames.DeletedAt).CurrentValue = DateTime.UtcNow;
-        });
-    }
-
-    private void FillTenantIdToAddedEntities()
-    {
-        var addedOrModifiedTenantEntries = ChangeTracker.Entries<IHasTenantId>()
-            .Where(entry => entry.State == EntityState.Added)
-            .ToList();
-
-        addedOrModifiedTenantEntries.ForEach(entry =>
-            entry.Property(TenantFieldNames.Id).CurrentValue = _currentTanent.Current.Id);
     }
 
     private IReadOnlyList<EntityEntry<Entity>> GetAllEntityEntiriesWithDomainEvents()

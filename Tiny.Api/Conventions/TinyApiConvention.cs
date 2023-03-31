@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Tiny.Api.Attributes.Conventions;
-using Tiny.Api.Enums;
+using Tiny.Api.Extenstions;
 
 namespace Tiny.Api.Conventions;
 
@@ -17,46 +17,38 @@ public class TinyApiConvention : IApplicationModelConvention
         {
             foreach (var action in controller.Actions)
             {
-                var responseTypeByActionAttribute = action.Attributes.OfType<ResponseTypeByActionAttribute>().FirstOrDefault();
-                if (responseTypeByActionAttribute == null)
+                var produceResponseTypes = action.Attributes.OfType<ProducesResponseTypeForAttribute>().FirstOrDefault();
+                if (produceResponseTypes == null)
                     continue;
-                
-                //TODO : responseTypeByAction.Action 에 따른 ProduceResponseTypeAttribute생성
-                var actionMethod = GetHttpMethod(action);
-                var statusCode = DefaultSuccessCodes.Default[actionMethod];
 
-                var responseTypeByActionAttributeType = responseTypeByActionAttribute.GetType();
-                if (responseTypeByActionAttributeType.IsGenericType)
-                {
-                    var genericTypeArgument = responseTypeByActionAttributeType.GenericTypeArguments[0];
-                    action.Filters.Add(new ProducesResponseTypeAttribute(genericTypeArgument, statusCode));
-                }
-                else
-                {
-                    action.Filters.Add((new ProducesResponseTypeAttribute(statusCode)));
-                }
+                // var httpMethod = GetHttpMethod(action);
+                var successStatusCode = produceResponseTypes.GetSuccessStatusCode();
 
-                var responseTypeAttributes =
-                    ResponseObjectGenerator.GenerateBy(responseTypeByActionAttribute.ResponseBy);
-                foreach (var responseTypeAttribute in responseTypeAttributes)
+                var producesSuccessResponseTypeAttribute = new ProducesResponseTypeAttribute(successStatusCode);
+                if (produceResponseTypes.TryGetGenericArgument(out var successObjectType))
+                    producesSuccessResponseTypeAttribute.Type = successObjectType!;
+
+                action.Filters.Add(producesSuccessResponseTypeAttribute);
+
+                foreach (var errorResponseTypeAttribute in produceResponseTypes.GetProduceResponseTypeAttributes())
                 {
-                    action.Filters.Add(responseTypeAttribute);
+                    action.Filters.Add(errorResponseTypeAttribute);
                 }
             }
         }
     }
 
-    private HttpActionMethod GetHttpMethod(ActionModel actionModel)
-    {
-        if (actionModel.Attributes.OfType<HttpGetAttribute>().Any())
-            return HttpActionMethod.Get;
-        else if (actionModel.Attributes.OfType<HttpPostAttribute>().Any())
-            return HttpActionMethod.Post;
-        else if (actionModel.Attributes.OfType<HttpPutAttribute>().Any())
-            return HttpActionMethod.Put;
-        else if (actionModel.Attributes.OfType<HttpDeleteAttribute>().Any())
-            return HttpActionMethod.Delete;
-
-        return HttpActionMethod.None;
-    }
+    // private static HttpActionMethod GetHttpMethod(ActionModel actionModel)
+    // {
+    //     if (actionModel.Attributes.OfType<HttpGetAttribute>().Any())
+    //         return HttpActionMethod.Get;
+    //     else if (actionModel.Attributes.OfType<HttpPostAttribute>().Any())
+    //         return HttpActionMethod.Post;
+    //     else if (actionModel.Attributes.OfType<HttpPutAttribute>().Any())
+    //         return HttpActionMethod.Put;
+    //     else if (actionModel.Attributes.OfType<HttpDeleteAttribute>().Any())
+    //         return HttpActionMethod.Delete;
+    //
+    //     return HttpActionMethod.None;
+    // }
 }

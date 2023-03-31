@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using Tiny.Domain.Exceptions;
 
 namespace Tiny.Domain.AggregateModels.JournalEntryAggregate;

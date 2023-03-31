@@ -23,8 +23,8 @@ public class GLAccountController : ControllerBase
         this._mediator = mediator;
     }
 
-    [HttpGet("{id}")]
-    [ResponseTypeByAction<GLAccountViewModel>(ResponseBy.GetOne)]
+    [HttpGet("{id:long}")]
+    [ProducesResponseTypeFor<GLAccountViewModel>(RequestAction.GetOne)]
     public async Task<ActionResult> GetOneAsync([FromRoute] long id, CancellationToken cancellationToken)
     {
         var glAccount = await _mediator.Send(new GLAccountGetOneQuery(id), cancellationToken);
@@ -32,7 +32,7 @@ public class GLAccountController : ControllerBase
     }
 
     [HttpGet]
-    [ResponseTypeByAction<IReadOnlyList<GLAccountViewModel>>(ResponseBy.GetMany)]
+    [ProducesResponseTypeFor<IReadOnlyList<GLAccountViewModel>>(RequestAction.GetMany)]
     public async Task<ActionResult> GetManyAsync(CancellationToken cancellationToken)
     {
         var glAccounts = await _mediator.Send(new GLAccountGetManyQuery(), cancellationToken);
@@ -40,21 +40,26 @@ public class GLAccountController : ControllerBase
     }
 
     [HttpPost]
-    [ResponseTypeByAction(ResponseBy.Post)]
+    [ProducesResponseTypeFor(RequestAction.Post)]
     public async Task<ActionResult> PostAsync([FromBody] GLAccountAddCommand request, CancellationToken cancellationToken)
     {
         var id = await _mediator.Send(request, cancellationToken);
         return Created("", id);
     }
 
-    [HttpPut("{id}")]
-    [ResponseTypeByAction<GLAccountViewModel>(ResponseBy.Put)]
+    [HttpPut("{id:long}")]
+    [ProducesResponseTypeFor<GLAccountViewModel>(RequestAction.Put)]
     public async Task<ActionResult> PutAsync([FromRoute] long id, [FromBody] GLAccountUpdateRequest body, CancellationToken cancellationToken)
     {
         var command = body.ToCommand(id);
         var glAccountViewModel = await _mediator.Send(command, cancellationToken);
         return Created("", glAccountViewModel);
     }
-    
-    //TODO : Delete 메소드를 만들어서 ResponseTypeByActionAttribute 테스트
+
+    [HttpDelete("{id:long}")]
+    [ProducesResponseTypeFor(RequestAction.Delete)]
+    public Task<ActionResult> DeleteAsync([FromRoute] long id, CancellationToken cancellationToken)
+    {
+        return Task.Run(() => (ActionResult)NoContent(), cancellationToken);
+    }
 }

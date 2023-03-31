@@ -6,12 +6,12 @@ namespace Tiny.Infrastructure.Behaviors;
 public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    private readonly TinyContext _dbContext;
+    private readonly TinyDbContext _dbDbContext;
     private readonly ILogger<TransactionBehavior<TRequest, TResponse>> _logger;
 
-    public TransactionBehavior(TinyContext dbContext, ILogger<TransactionBehavior<TRequest, TResponse>> logger)
+    public TransactionBehavior(TinyDbContext dbDbContext, ILogger<TransactionBehavior<TRequest, TResponse>> logger)
     {
-        _dbContext = dbContext;
+        _dbDbContext = dbDbContext;
         _logger = logger;
     }
 
@@ -24,25 +24,25 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
 
         try
         {
-            if (_dbContext.HasActiveTransaction)
+            if (_dbDbContext.HasActiveTransaction)
             {
                 return await next();
             }
 
-            var stratagy = _dbContext.Database.CreateExecutionStrategy();
+            var stratagy = _dbDbContext.Database.CreateExecutionStrategy();
 
             await stratagy.ExecuteAsync(async () =>
             {
-                await using var transaction = await _dbContext.BeginTransactionAsync();
+                await using var transaction = await _dbDbContext.BeginTransactionAsync();
                 var transactionId = transaction.TransactionId;
                 _logger.LogInformation("----- Begin transaction {TransactionId} for {CommandName} ({@Command})",
-                    transaction.TransactionId, typeName, request);
+                    transactionId, typeName, request);
 
                 response = await next();
 
-                await _dbContext.CommitTransactionAsync(transaction);
+                await _dbDbContext.CommitTransactionAsync(transaction);
                 _logger.LogInformation("----- Commit transaction {TransactionId} for {CommandName}",
-                    transaction.TransactionId, typeName);
+                    transactionId, typeName);
             });
 
             return response!;

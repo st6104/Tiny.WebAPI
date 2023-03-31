@@ -1,21 +1,16 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tiny.Domain.AggregateModels.GLAccountAggregate;
-using Tiny.Infrastructure.Abstract;
-using Tiny.Infrastructure.Abstract.MultiTenant;
+using Tiny.Infrastructure.Abstract.EntityTypeConfigure;
 
 namespace Tiny.Infrastructure.EntityConfigurations;
 
 // GLAccount 엔티티 모델 빌드 클래스
 public class GLAccountEntityConfiguration : EntityTypeConfigurationBase<GLAccount>
 {
-    public GLAccountEntityConfiguration(ITenantInfo currentTenant) : base(currentTenant)
-    {
-    }
-
     protected override void ConfigureEntity(EntityTypeBuilder<GLAccount> builder)
     {
         // 테이블 이름 설정
-        builder.ToTable(nameof(GLAccount), TinyContext.DefaultSchema);
+        builder.ToTable(nameof(GLAccount), TinyDbContext.DefaultSchema);
 
         // Id 프로퍼티를 PK로 설정
         builder.HasKey(x => x.Id);

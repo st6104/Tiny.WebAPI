@@ -10,7 +10,7 @@ using Tiny.Infrastructure;
 
 namespace Tiny.Infrastructure.Migrations.Migrations
 {
-    [DbContext(typeof(TinyContext))]
+    [DbContext(typeof(TinyDbContext))]
     partial class TinyContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

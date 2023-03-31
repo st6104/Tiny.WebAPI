@@ -1,19 +1,14 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tiny.Domain.AggregateModels.GLAccountAggregate;
-using Tiny.Infrastructure.Abstract;
-using Tiny.Infrastructure.Abstract.MultiTenant;
+using Tiny.Infrastructure.Abstract.EntityTypeConfigure;
 
 namespace Tiny.Infrastructure.EntityConfigurations;
 
 public class AccountingTypeEntityConfiguration : EntityTypeConfigurationBase<AccountingType>
 {
-    public AccountingTypeEntityConfiguration(ITenantInfo tenantInfo) : base(tenantInfo)
-    {
-    }
-
     protected override void ConfigureEntity(EntityTypeBuilder<AccountingType> builder)
     {
-        builder.ToTable("AccountingType", TinyContext.DefaultSchema);
+        builder.ToTable("AccountingType", TinyDbContext.DefaultSchema);
 
         builder.HasKey(entity => entity.Value);
 

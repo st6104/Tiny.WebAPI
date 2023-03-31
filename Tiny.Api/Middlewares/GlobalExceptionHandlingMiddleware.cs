@@ -1,6 +1,6 @@
 using System.Net;
-using System.Text.Json;
-using Ardalis.Result;
+using FluentValidation;
+using Tiny.Api.ResponseObjects;
 using Tiny.Infrastructure.Abstract.Exceptions;
 using Tiny.Shared.Exceptions;
 
@@ -22,26 +22,45 @@ public class GlobalExceptionHandlingMiddleware
         {
             await _next(context);
         }
-        catch (TenantNotFoundException tenantNotFoundException)
-        {
-            context.Response.ContentType = ResponseContentTypeToJson;
-            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-            await context.Response.WriteAsync(tenantNotFoundException.Message);
-        }
-        catch (EntityIdNotFoundException entityIdNotFoundExcption)
-        {//TODO: 예외별 응답객체 생성 로직 작성(EntityIdNotFoundException)
-
-        }
-        catch (DomainValidationErrorException validationErrorException)
-        {//TODO: 예외별 응답객체 생성 로직 작성(DomainValidationErrorException)
-            
-        }
         catch (Exception ex)
         {
-            context.Response.ContentType = ResponseContentTypeToJson;
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            var result = Result.Error(ex.Message);
-            await context.Response.WriteAsync(JsonSerializer.Serialize(result));
+            await SetResponseObjectTo(context.Response, ex);
         }
+    }
+
+    private Task SetResponseObjectTo(HttpResponse httpResponse, Exception exception)
+    {
+        httpResponse.ContentType = ResponseContentTypeToJson;
+
+        Task task;
+        
+        switch (exception)
+        {
+            case TenantNotFoundException tenantNotFoundException:
+                httpResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                task = httpResponse.WriteAsJsonAsync(new NotFoundObject(NotFoundObject.TenantId,
+                    tenantNotFoundException.Message));
+                break;
+            case EntityIdNotFoundException entityIdNotFoundExcption:
+                httpResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                task = httpResponse.WriteAsJsonAsync(new NotFoundObject(NotFoundObject.EntityId,
+                    entityIdNotFoundExcption.Message));
+                break;
+            case DomainValidationErrorException domainValidationErrorException:
+                httpResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                task = httpResponse.WriteAsJsonAsync(new BadRequestObject(domainValidationErrorException.Identifier,
+                    domainValidationErrorException.Message));
+                break;
+            case ValidationException validationException:
+                httpResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                task = httpResponse.WriteAsJsonAsync(new BadRequestObject(validationException.Errors));
+                break;
+            default:
+                httpResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
+                task = httpResponse.WriteAsJsonAsync(new ServerErrorObject(exception.Message));
+                break;
+        }
+
+        return task;
     }
 }

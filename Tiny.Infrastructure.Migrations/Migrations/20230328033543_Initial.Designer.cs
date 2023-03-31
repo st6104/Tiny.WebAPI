@@ -11,7 +11,7 @@ using Tiny.Infrastructure;
 
 namespace Tiny.Infrastructure.Migrations.Migrations
 {
-    [DbContext(typeof(TinyContext))]
+    [DbContext(typeof(TinyDbContext))]
     [Migration("20230328033543_Initial")]
     partial class Initial
     {

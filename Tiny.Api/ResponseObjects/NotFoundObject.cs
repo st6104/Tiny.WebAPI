@@ -6,9 +6,10 @@ namespace Tiny.Api.ResponseObjects;
 
 public class NotFoundObject
 {
-    public const string NotFoundType_EntityId = "EntityId";
-    public const string NotFoundType_TenantId = "TenantId";
+    public const string EntityId = "EntityId";
+    public const string TenantId = "TenantId";
     
+    //TODO : 좀 더 명확하게 NotFound Response를 구분할 방법?
     /// <summary>
     /// 에러 유형(EntityId, TenantId)
     /// </summary>

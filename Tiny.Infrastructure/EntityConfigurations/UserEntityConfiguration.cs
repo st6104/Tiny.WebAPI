@@ -1,19 +1,14 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tiny.Domain.AggregateModels.JournalEntryAggregate;
-using Tiny.Infrastructure.Abstract;
-using Tiny.Infrastructure.Abstract.MultiTenant;
+using Tiny.Infrastructure.Abstract.EntityTypeConfigure;
 
 namespace Tiny.Infrastructure.EntityConfigurations;
 
 public class UserEntityConfiguration : EntityTypeConfigurationBase<User>
 {
-    public UserEntityConfiguration(ITenantInfo currentTenant) : base(currentTenant)
-    {
-    }
-
     protected override void ConfigureEntity(EntityTypeBuilder<User> builder)
     {
-        builder.ToTable("User", TinyContext.DefaultSchema);
+        builder.ToTable("User", TinyDbContext.DefaultSchema);
 
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).IsRequired().ValueGeneratedOnAdd().UseHiLo();

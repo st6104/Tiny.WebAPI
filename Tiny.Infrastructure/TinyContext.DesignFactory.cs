@@ -4,14 +4,14 @@ using Tiny.Infrastructure.Abstract.MultiTenant;
 
 namespace Tiny.Infrastructure;
 
-public class TinyContextDesignFactory : IDesignTimeDbContextFactory<TinyContext>
+public class TinyContextDesignFactory : IDesignTimeDbContextFactory<TinyDbContext>
 {
-    public TinyContext CreateDbContext(string[] args)
+    public TinyDbContext CreateDbContext(string[] args)
     {
-        return new TinyContext(new FakeMediator(), new FakeLoggerFactory(), new FakeCurrentTenant());
+        return new TinyDbContext(new FakeMediator(), new FakeLoggerFactory(), new FakeMultiTenant());
     }
 
-    private class FakeCurrentTenant : ICurrentTenantInfo
+    private class FakeMultiTenant : IMultiTenantService
     {
         public ITenantInfo Current { get => new FakeTenantInfo(); set { } }
 

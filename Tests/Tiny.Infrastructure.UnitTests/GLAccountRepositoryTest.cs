@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using UnitTest.Common;
-
-namespace Tiny.Infrastructure.UnitTests;
+﻿namespace Tiny.Infrastructure.UnitTests;
 
 public class GLAccountRepositoryTest
 {

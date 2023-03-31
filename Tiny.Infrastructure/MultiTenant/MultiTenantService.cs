@@ -6,7 +6,7 @@ using Tiny.Infrastructure.Abstract.MultiTenant;
 
 namespace Tiny.Infrastructure.MultiTenant;
 
-public class CurrentTenantInfo : ICurrentTenantInfo
+public class MultiTenantService : IMultiTenantService
 {
     public ITenantInfo Current { get; set; } = default!;
 }

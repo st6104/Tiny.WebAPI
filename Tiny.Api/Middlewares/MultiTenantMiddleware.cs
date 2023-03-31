@@ -13,13 +13,13 @@ public class MultiTenantMiddleware
         this._next = next;
     }
 
-    public async Task InvokeAsync(HttpContext httpContext, IMultiTenantStore<TenantInfo> tenantStore, ICurrentTenantInfo currentTenantInfo)
+    public async Task InvokeAsync(HttpContext httpContext, IMultiTenantStore<TenantInfo> tenantStore, IMultiTenantService multiTenantService)
     {
         var tenantId = httpContext.Request.Headers[CustomRequestHeader.TenantId].FirstOrDefault() ?? string.Empty;
 
         if (!string.IsNullOrWhiteSpace(tenantId) && await tenantStore.TryGetByIdAsync(tenantId, out var tenantInfo))
         {
-            currentTenantInfo.Current = tenantInfo;
+            multiTenantService.Current = tenantInfo;
             await _next(httpContext);
         }
         else

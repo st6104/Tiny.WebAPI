@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Tiny.Api.Attributes.Conventions;
-using Tiny.Api.ResponseObjects;
 
 namespace Tiny.Api.Enums;
 
@@ -16,24 +15,30 @@ public enum HttpActionMethod
     Delete
 }
 
-public enum ResponseBy
+public enum RequestAction
 {
-    [ResponseObjectBy<NotFoundObject>(StatusCodes.Status404NotFound)]
-    [ResponseObjectBy<ServerErrorObject>(StatusCodes.Status500InternalServerError)]
+    [SuccessStatusCode(StatusCodes.Status200OK)]
+    [ResponseToNotFound]
+    [ResponseToServerError]
     GetOne,
-    
-    [ResponseObjectBy<ServerErrorObject>(StatusCodes.Status500InternalServerError)]
+
+    [SuccessStatusCode(StatusCodes.Status200OK)]
+    [ResponseToServerError]
     GetMany,
-    
-    [ResponseObjectBy<BadRequestObject>(StatusCodes.Status400BadRequest)]
-    [ResponseObjectBy<ServerErrorObject>(StatusCodes.Status500InternalServerError)]
+
+    [SuccessStatusCode(StatusCodes.Status201Created)]
+    [ResponseToBadRequest]
+    [ResponseToServerError]
     Post,
-    
-    [ResponseObjectBy<BadRequestObject>(StatusCodes.Status400BadRequest)]
-    [ResponseObjectBy<ServerErrorObject>(StatusCodes.Status500InternalServerError)]
+
+    [SuccessStatusCode(StatusCodes.Status204NoContent)]
+    [ResponseToNotFound]
+    [ResponseToBadRequest]
+    [ResponseToServerError]
     Put,
-    
-    [ResponseObjectBy<NotFoundObject>(StatusCodes.Status404NotFound)]
-    [ResponseObjectBy<ServerErrorObject>(StatusCodes.Status500InternalServerError)]
+
+    [SuccessStatusCode(StatusCodes.Status204NoContent)]
+    [ResponseToNotFound]
+    [ResponseToServerError]
     Delete
 }

@@ -11,7 +11,7 @@ public static class ConfigureServiceContainer
 {
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddDbContext<TinyContext>();
+        services.AddDbContext<TinyDbContext>();
 
         services.Scan(scan =>
         {
@@ -26,7 +26,7 @@ public static class ConfigureServiceContainer
         });
 
         services.AddScoped<IMultiTenantStore<TenantInfo>, MultiTenantStore>();
-        services.AddScoped<ICurrentTenantInfo, CurrentTenantInfo>();
+        services.AddScoped<IMultiTenantService, MultiTenantService>();
 
         return services;
     }

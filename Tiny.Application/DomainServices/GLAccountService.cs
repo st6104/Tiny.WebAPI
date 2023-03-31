@@ -2,7 +2,6 @@ using Tiny.Domain.AggregateModels.GLAccountAggregate;
 using Tiny.Domain.AggregateModels.GLAccountAggregate.Services;
 using Tiny.Domain.AggregateModels.GLAccountAggregate.Specifications;
 using Tiny.Domain.Exceptions;
-using Tiny.Shared.Repository;
 
 namespace Tiny.Application.DomainServices;
 public class GLAccountService : IGLAccountService

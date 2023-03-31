@@ -4,7 +4,7 @@
 
 namespace Tiny.Infrastructure.Abstract.MultiTenant;
 
-public interface ICurrentTenantInfo
+public interface IMultiTenantService
 {
     ITenantInfo Current { get; set; }
 }

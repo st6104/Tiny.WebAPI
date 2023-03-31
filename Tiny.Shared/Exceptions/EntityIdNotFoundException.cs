@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace Tiny.Shared.Exceptions;
 
 /// <summary>
@@ -10,22 +5,16 @@ namespace Tiny.Shared.Exceptions;
 /// </summary>
 public sealed class EntityIdNotFoundException : Exception
 {
+    private readonly bool _assginedMessage;
+    
     public long FailedId { get; }
+    public override string Message => _assginedMessage ? base.Message : $"EntityId({FailedId}) Not Found";
 
-    public EntityIdNotFoundException(long failedId, string? message = null, Exception? innerException = null) : base(message, innerException)
+
+    public EntityIdNotFoundException(long failedId, string? message = null, Exception? innerException = null) : base(
+        message, innerException)
     {
         FailedId = failedId;
-    }
-
-    private EntityIdNotFoundException() : base()
-    {
-    }
-
-    private EntityIdNotFoundException(string? message) : base(message)
-    {
-    }
-
-    private EntityIdNotFoundException(string? message, Exception? innerException) : base(message, innerException)
-    {
+        _assginedMessage = !string.IsNullOrWhiteSpace(message);
     }
 }

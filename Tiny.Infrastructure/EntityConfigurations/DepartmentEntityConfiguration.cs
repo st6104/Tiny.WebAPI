@@ -1,19 +1,14 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tiny.Domain.AggregateModels.JournalEntryAggregate;
-using Tiny.Infrastructure.Abstract;
-using Tiny.Infrastructure.Abstract.MultiTenant;
+using Tiny.Infrastructure.Abstract.EntityTypeConfigure;
 
 namespace Tiny.Infrastructure.EntityConfigurations;
 
 public class DepartmentEntityConfiguration : EntityTypeConfigurationBase<Department>
 {
-    public DepartmentEntityConfiguration(ITenantInfo currentTenant) : base(currentTenant)
-    {
-    }
-
     protected override void ConfigureEntity(EntityTypeBuilder<Department> builder)
     {
-        builder.ToTable("Department", TinyContext.DefaultSchema);
+        builder.ToTable("Department", TinyDbContext.DefaultSchema);
 
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).IsRequired().ValueGeneratedOnAdd().UseHiLo();
