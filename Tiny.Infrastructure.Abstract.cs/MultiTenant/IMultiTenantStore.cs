@@ -6,9 +6,8 @@ namespace Tiny.Infrastructure.Abstract.MultiTenant;
 
 public interface IMultiTenantStore<T> where T : class, ITenantInfo
 {
-    Task<IEnumerable<T>> GetAllAsync();
-
-    Task<bool> TryGetByIdAsync(string id, out T tenantInfo);
+    Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<bool> TryGetByIdAsync(string id, out T tenantInfo, CancellationToken cancellationToken = default);
     //Task<bool> TryAddAsync(T tenantInfo);
     //Task<bool> TryUpdateAsync(T tenantInfo);
     //Task<bool> TryRemoveByIdAsync(string id);

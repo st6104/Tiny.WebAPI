@@ -11,7 +11,7 @@ public class MultiTenantStore : IMultiTenantStore<TenantInfo>
     private readonly List<TenantInfo> _tenants;
 
     public MultiTenantStore()
-    {
+    {//TODO : 추후 DB에서 읽어오는 것으로 분리
         _tenants = new List<TenantInfo>
         {
             new("1000", "Tenant1",
@@ -23,12 +23,12 @@ public class MultiTenantStore : IMultiTenantStore<TenantInfo>
         };
     }
 
-    public Task<IEnumerable<TenantInfo>> GetAllAsync()
+    public Task<IEnumerable<TenantInfo>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return Task.FromResult(_tenants.AsEnumerable());
     }
 
-    public Task<bool> TryGetByIdAsync(string id, out TenantInfo tenantInfo)
+    public Task<bool> TryGetByIdAsync(string id, out TenantInfo tenantInfo, CancellationToken cancellationToken = default)
     {
         tenantInfo = default!;
         var firstOrDefault = _tenants.FirstOrDefault(tenant => tenant.Id == id);
