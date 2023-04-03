@@ -51,31 +51,10 @@ public abstract class MultiTenantApplicationDbContext : DbContext
     {
         OnBeforeModelCreating(modelBuilder);
         modelBuilder.ApplyEntityConfigurationsFromAssemblyContaining(this.GetType());
-
-        var mutableEntityTypes = modelBuilder.Model.GetEntityTypes();
-        foreach (var mutableEntityType in mutableEntityTypes)
-        {
-            var entityTypeBuilder = modelBuilder.Entity(mutableEntityType.ClrType);
-            var queryFilterBullder = entityTypeBuilder.AddQueryFilters();
-
-            if (mutableEntityType.ClrType.IsImplemented<IHasTenantId>())
-            {
-                if (mutableEntityType.IsExistProperty(TenantFieldNames.Id))
-                    entityTypeBuilder.AddTenantIdProperty();
-
-                queryFilterBullder.Add(x => EF.Property<string>(x, TenantFieldNames.Id) == TenantId);
-            }
-
-            if (mutableEntityType.ClrType.IsImplemented<ISoftDeletable>())
-            {
-                if (mutableEntityType.IsExistProperty(SoftDeleteFieldNames.DeletedAt))
-                    entityTypeBuilder.AddDeletedAtProperty();
-
-                queryFilterBullder.Add(x => EF.Property<bool>(x, nameof(ISoftDeletable.Deleted)) == false);
-            }
-
-            queryFilterBullder.Build();
-        }
+        
+        modelBuilder.AddTenantIdProperty();
+        modelBuilder.AddDeletedAtProperty();
+        modelBuilder.AddQueryFilter(TenantId);
     }
 
     protected virtual void OnBeforeModelCreating(ModelBuilder modelBuilder) { }

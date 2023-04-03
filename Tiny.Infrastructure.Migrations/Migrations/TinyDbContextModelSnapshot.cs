@@ -94,6 +94,9 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -162,6 +165,9 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -193,6 +199,9 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<long>("DepartmentId")
                         .HasColumnType("bigint");
 
@@ -208,6 +217,11 @@ namespace Tiny.Infrastructure.Migrations.Migrations
 
                     b.Property<DateTime>("PostingDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
 
@@ -307,6 +321,9 @@ namespace Tiny.Infrastructure.Migrations.Migrations
 
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()

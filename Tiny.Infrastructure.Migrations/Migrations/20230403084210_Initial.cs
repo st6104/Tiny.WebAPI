@@ -41,6 +41,7 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     TenantId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Deleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -83,6 +84,7 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     TenantId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Deleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -101,6 +103,8 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     JournalEntryStatusId = table.Column<int>(type: "int", nullable: false),
                     DepartmentId = table.Column<long>(type: "bigint", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false, defaultValue: ""),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    TenantId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Deleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
@@ -133,6 +137,7 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     PostableId = table.Column<int>(type: "int", nullable: false),
                     AccountingTypeId = table.Column<int>(type: "int", nullable: false),
                     Balance = table.Column<decimal>(type: "decimal(19,6)", precision: 19, scale: 6, nullable: false, defaultValue: 0m),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     TenantId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Deleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },

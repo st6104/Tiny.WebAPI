@@ -25,6 +25,7 @@ CREATE TABLE [dbo].[Department] (
     [Id] bigint NOT NULL,
     [Code] nvarchar(200) NOT NULL,
     [Name] nvarchar(200) NOT NULL,
+    [DeletedAt] datetime2 NULL,
     [TenantId] nvarchar(200) NOT NULL,
     [Deleted] bit NOT NULL,
     CONSTRAINT [PK_Department] PRIMARY KEY ([Id])
@@ -49,6 +50,7 @@ CREATE TABLE [dbo].[User] (
     [Id] bigint NOT NULL,
     [Code] nvarchar(200) NOT NULL,
     [Name] nvarchar(200) NOT NULL,
+    [DeletedAt] datetime2 NULL,
     [TenantId] nvarchar(200) NOT NULL,
     [Deleted] bit NOT NULL,
     CONSTRAINT [PK_User] PRIMARY KEY ([Id])
@@ -61,6 +63,8 @@ CREATE TABLE [dbo].[JournalEntry] (
     [JournalEntryStatusId] int NOT NULL,
     [DepartmentId] bigint NOT NULL,
     [Description] nvarchar(200) NOT NULL DEFAULT N'',
+    [DeletedAt] datetime2 NULL,
+    [TenantId] nvarchar(200) NOT NULL,
     [Deleted] bit NOT NULL DEFAULT CAST(0 AS bit),
     CONSTRAINT [PK_JournalEntry] PRIMARY KEY ([Id]),
     CONSTRAINT [FK_JournalEntry_Department_DepartmentId] FOREIGN KEY ([DepartmentId]) REFERENCES [dbo].[Department] ([Id]) ON DELETE CASCADE,
@@ -75,6 +79,7 @@ CREATE TABLE [dbo].[GLAccount] (
     [PostableId] int NOT NULL,
     [AccountingTypeId] int NOT NULL,
     [Balance] decimal(19,6) NOT NULL DEFAULT 0.0,
+    [DeletedAt] datetime2 NULL,
     [TenantId] nvarchar(200) NOT NULL,
     [Deleted] bit NOT NULL DEFAULT CAST(0 AS bit),
     CONSTRAINT [PK_GLAccount] PRIMARY KEY ([Id]),
@@ -155,7 +160,7 @@ CREATE UNIQUE INDEX [IX_User_TenantId_Code] ON [dbo].[User] ([TenantId], [Code])
 GO
 
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20230403064926_Initial', N'7.0.4');
+VALUES (N'20230403084210_Initial', N'7.0.4');
 GO
 
 COMMIT;
