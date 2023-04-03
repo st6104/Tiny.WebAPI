@@ -1,6 +1,5 @@
-using System.Net;
 using FluentValidation;
-using Tiny.Api.ResponseObjects;
+using Tiny.Api.Extenstions;
 using Tiny.Infrastructure.Abstract.Exceptions;
 using Tiny.Shared.Exceptions;
 
@@ -28,38 +27,18 @@ public class GlobalExceptionHandlingMiddleware
         }
     }
 
-    private Task SetResponseObjectTo(HttpResponse httpResponse, Exception exception)
+    private static Task SetResponseObjectTo(HttpResponse httpResponse, Exception exception)
     {
         httpResponse.ContentType = ResponseContentTypeToJson;
 
-        Task task;
-        
-        switch (exception)
+        var task = exception switch
         {
-            case TenantNotFoundException tenantNotFoundException:
-                httpResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                task = httpResponse.WriteAsJsonAsync(new NotFoundObject(NotFoundObject.TenantId,
-                    tenantNotFoundException.Message));
-                break;
-            case EntityIdNotFoundException entityIdNotFoundExcption:
-                httpResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                task = httpResponse.WriteAsJsonAsync(new NotFoundObject(NotFoundObject.EntityId,
-                    entityIdNotFoundExcption.Message));
-                break;
-            case DomainValidationErrorException domainValidationErrorException:
-                httpResponse.StatusCode = (int)HttpStatusCode.BadRequest;
-                task = httpResponse.WriteAsJsonAsync(new BadRequestObject(domainValidationErrorException.Identifier,
-                    domainValidationErrorException.Message));
-                break;
-            case ValidationException validationException:
-                httpResponse.StatusCode = (int)HttpStatusCode.BadRequest;
-                task = httpResponse.WriteAsJsonAsync(new BadRequestObject(validationException.Errors));
-                break;
-            default:
-                httpResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
-                task = httpResponse.WriteAsJsonAsync(new ServerErrorObject(exception.Message));
-                break;
-        }
+            TenantNotFoundException tenantNotFoundException => httpResponse.AssignResponseAsTenantNotFound(tenantNotFoundException),
+            EntityIdNotFoundException entityIdNotFoundExcption => httpResponse.AssignResponseAsEntityNotFound(entityIdNotFoundExcption),
+            DomainValidationErrorException domainValidationErrorException => httpResponse.AssignResponseAsDomainInvalid(domainValidationErrorException),
+            ValidationException validationException => httpResponse.AssignResponseAsInvalid(validationException),
+            _ => httpResponse.AssignResponseAsServerError(exception)
+        };
 
         return task;
     }
