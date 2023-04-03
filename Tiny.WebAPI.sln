@@ -32,6 +32,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "솔루션 항목", "솔루�
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tiny.Infrastructure.Abstract", "Tiny.Infrastructure.Abstract.cs\Tiny.Infrastructure.Abstract.csproj", "{9AC2FA25-364C-4E2F-814E-66CF49707761}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WorkerServices", "WorkerServices", "{45F5E161-C948-4292-B82E-2F55469A4088}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tiny.Worker.DomainGenerator", "Tiny.Worker.DomainGenerator\Tiny.Worker.DomainGenerator.csproj", "{8C65D15F-EBA0-4E13-9E71-89E76C9948D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +86,10 @@ Global
 		{9AC2FA25-364C-4E2F-814E-66CF49707761}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9AC2FA25-364C-4E2F-814E-66CF49707761}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9AC2FA25-364C-4E2F-814E-66CF49707761}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C65D15F-EBA0-4E13-9E71-89E76C9948D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C65D15F-EBA0-4E13-9E71-89E76C9948D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C65D15F-EBA0-4E13-9E71-89E76C9948D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C65D15F-EBA0-4E13-9E71-89E76C9948D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -91,6 +99,7 @@ Global
 		{201C2B1A-5989-4B2D-85F0-2B9C6F101224} = {482AEAB8-A6E7-490E-92BF-8924043A4C44}
 		{ED4A7DD9-0388-43C1-BE5F-461B110442E9} = {482AEAB8-A6E7-490E-92BF-8924043A4C44}
 		{39545A6D-1CCE-4C0F-9D89-13B986E5B8CD} = {482AEAB8-A6E7-490E-92BF-8924043A4C44}
+		{8C65D15F-EBA0-4E13-9E71-89E76C9948D7} = {45F5E161-C948-4292-B82E-2F55469A4088}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DE0B2322-A314-43B6-A2A5-B1C780AD54F0}
