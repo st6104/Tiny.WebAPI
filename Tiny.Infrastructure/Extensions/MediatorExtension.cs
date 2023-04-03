@@ -9,6 +9,6 @@ internal static class MediatorExtension
         CancellationToken cancellationToken)
     {
         var domainEvents = eventStore.GetAll();
-        await domainEvents.ForEachAsync(async domainEvent => await mediator.Publish(domainEvent), cancellationToken);
+        await domainEvents.ForEachAsync(async (domainEvent, ctk) => await mediator.Publish(domainEvent, ctk), cancellationToken);
     }
 }
