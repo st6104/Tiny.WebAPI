@@ -60,15 +60,17 @@ public abstract class MultiTenantApplicationDbContext : DbContext
 
             if (mutableEntityType.ClrType.IsImplemented<IHasTenantId>())
             {
-                mutableEntityType.IsExistProperty(TenantFieldNames.Id, true);
-                entityTypeBuilder.AddTenantIdProperty();
+                if (mutableEntityType.IsExistProperty(TenantFieldNames.Id))
+                    entityTypeBuilder.AddTenantIdProperty();
+
                 queryFilterBullder.Add(x => EF.Property<string>(x, TenantFieldNames.Id) == TenantId);
             }
 
             if (mutableEntityType.ClrType.IsImplemented<ISoftDeletable>())
             {
-                mutableEntityType.IsExistProperty(SoftDeleteFieldNames.DeletedAt, true);
-                entityTypeBuilder.AddDeletedAtProperty();
+                if (mutableEntityType.IsExistProperty(SoftDeleteFieldNames.DeletedAt))
+                    entityTypeBuilder.AddDeletedAtProperty();
+
                 queryFilterBullder.Add(x => EF.Property<bool>(x, nameof(ISoftDeletable.Deleted)) == false);
             }
 

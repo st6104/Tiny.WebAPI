@@ -11,7 +11,7 @@ using Tiny.Infrastructure;
 namespace Tiny.Infrastructure.Migrations.Migrations
 {
     [DbContext(typeof(TinyDbContext))]
-    partial class TinyContextModelSnapshot : ModelSnapshot
+    partial class TinyDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -94,9 +94,6 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -116,7 +113,7 @@ namespace Tiny.Infrastructure.Migrations.Migrations
 
                     b.HasIndex("PostableId");
 
-                    b.HasIndex("Code", "Name")
+                    b.HasIndex("TenantId", "Code", "Name")
                         .IsUnique();
 
                     b.ToTable("GLAccount", "dbo");
@@ -165,9 +162,6 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -180,7 +174,7 @@ namespace Tiny.Infrastructure.Migrations.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code")
+                    b.HasIndex("TenantId", "Code")
                         .IsUnique();
 
                     b.ToTable("Department", "dbo");
@@ -199,9 +193,6 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<long>("DepartmentId")
                         .HasColumnType("bigint");
 
@@ -217,11 +208,6 @@ namespace Tiny.Infrastructure.Migrations.Migrations
 
                     b.Property<DateTime>("PostingDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
 
@@ -322,9 +308,6 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -337,7 +320,7 @@ namespace Tiny.Infrastructure.Migrations.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code")
+                    b.HasIndex("TenantId", "Code")
                         .IsUnique();
 
                     b.ToTable("User", "dbo");

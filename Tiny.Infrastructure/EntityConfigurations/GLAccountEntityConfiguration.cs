@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tiny.Domain.AggregateModels.GLAccountAggregate;
 using Tiny.Infrastructure.Abstract.EntityTypeConfigure;
+using Tiny.Infrastructure.Abstract.Extensions;
 
 namespace Tiny.Infrastructure.EntityConfigurations;
 
@@ -17,8 +18,8 @@ public class GLAccountEntityConfiguration : EntityTypeConfigurationBase<GLAccoun
 
         builder.Property(x => x.Id).ValueGeneratedOnAdd().UseHiLo();
 
-        // Code 프로퍼티를 고유값(Unique)으로 설정
-        builder.HasIndex(x => new { x.Code, x.Name }).IsUnique();
+        // TenantID, Code, Name을 
+        builder.HasIndexWithTenantId(x => new { x.Code, x.Name }).IsUnique();
 
         builder.Property(x => x.Code).HasMaxLength(GLAccount.CodeLength).IsRequired();
 

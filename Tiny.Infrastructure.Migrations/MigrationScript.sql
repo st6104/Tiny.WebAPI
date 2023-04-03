@@ -25,7 +25,6 @@ CREATE TABLE [dbo].[Department] (
     [Id] bigint NOT NULL,
     [Code] nvarchar(200) NOT NULL,
     [Name] nvarchar(200) NOT NULL,
-    [DeletedAt] datetime2 NULL,
     [TenantId] nvarchar(200) NOT NULL,
     [Deleted] bit NOT NULL,
     CONSTRAINT [PK_Department] PRIMARY KEY ([Id])
@@ -50,7 +49,6 @@ CREATE TABLE [dbo].[User] (
     [Id] bigint NOT NULL,
     [Code] nvarchar(200) NOT NULL,
     [Name] nvarchar(200) NOT NULL,
-    [DeletedAt] datetime2 NULL,
     [TenantId] nvarchar(200) NOT NULL,
     [Deleted] bit NOT NULL,
     CONSTRAINT [PK_User] PRIMARY KEY ([Id])
@@ -63,8 +61,6 @@ CREATE TABLE [dbo].[JournalEntry] (
     [JournalEntryStatusId] int NOT NULL,
     [DepartmentId] bigint NOT NULL,
     [Description] nvarchar(200) NOT NULL DEFAULT N'',
-    [DeletedAt] datetime2 NULL,
-    [TenantId] nvarchar(200) NOT NULL,
     [Deleted] bit NOT NULL DEFAULT CAST(0 AS bit),
     CONSTRAINT [PK_JournalEntry] PRIMARY KEY ([Id]),
     CONSTRAINT [FK_JournalEntry_Department_DepartmentId] FOREIGN KEY ([DepartmentId]) REFERENCES [dbo].[Department] ([Id]) ON DELETE CASCADE,
@@ -79,7 +75,6 @@ CREATE TABLE [dbo].[GLAccount] (
     [PostableId] int NOT NULL,
     [AccountingTypeId] int NOT NULL,
     [Balance] decimal(19,6) NOT NULL DEFAULT 0.0,
-    [DeletedAt] datetime2 NULL,
     [TenantId] nvarchar(200) NOT NULL,
     [Deleted] bit NOT NULL DEFAULT CAST(0 AS bit),
     CONSTRAINT [PK_GLAccount] PRIMARY KEY ([Id]),
@@ -132,16 +127,16 @@ IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Name
     SET IDENTITY_INSERT [dbo].[Postable] OFF;
 GO
 
-CREATE UNIQUE INDEX [IX_Department_Code] ON [dbo].[Department] ([Code]);
+CREATE UNIQUE INDEX [IX_Department_TenantId_Code] ON [dbo].[Department] ([TenantId], [Code]);
 GO
 
 CREATE INDEX [IX_GLAccount_AccountingTypeId] ON [dbo].[GLAccount] ([AccountingTypeId]);
 GO
 
-CREATE UNIQUE INDEX [IX_GLAccount_Code_Name] ON [dbo].[GLAccount] ([Code], [Name]);
+CREATE INDEX [IX_GLAccount_PostableId] ON [dbo].[GLAccount] ([PostableId]);
 GO
 
-CREATE INDEX [IX_GLAccount_PostableId] ON [dbo].[GLAccount] ([PostableId]);
+CREATE UNIQUE INDEX [IX_GLAccount_TenantId_Code_Name] ON [dbo].[GLAccount] ([TenantId], [Code], [Name]);
 GO
 
 CREATE INDEX [IX_JournalEntry_DepartmentId] ON [dbo].[JournalEntry] ([DepartmentId]);
@@ -156,11 +151,11 @@ GO
 CREATE INDEX [IX_JournalEntryLine_JournalEntryId] ON [dbo].[JournalEntryLine] ([JournalEntryId]);
 GO
 
-CREATE UNIQUE INDEX [IX_User_Code] ON [dbo].[User] ([Code]);
+CREATE UNIQUE INDEX [IX_User_TenantId_Code] ON [dbo].[User] ([TenantId], [Code]);
 GO
 
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20230328033543_Initial', N'7.0.4');
+VALUES (N'20230403064926_Initial', N'7.0.4');
 GO
 
 COMMIT;

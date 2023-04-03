@@ -41,7 +41,6 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     TenantId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Deleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -84,7 +83,6 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     TenantId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Deleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -103,8 +101,6 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     JournalEntryStatusId = table.Column<int>(type: "int", nullable: false),
                     DepartmentId = table.Column<long>(type: "bigint", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false, defaultValue: ""),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    TenantId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Deleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
@@ -137,7 +133,6 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                     PostableId = table.Column<int>(type: "int", nullable: false),
                     AccountingTypeId = table.Column<int>(type: "int", nullable: false),
                     Balance = table.Column<decimal>(type: "decimal(19,6)", precision: 19, scale: 6, nullable: false, defaultValue: 0m),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     TenantId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Deleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
@@ -227,10 +222,10 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Department_Code",
+                name: "IX_Department_TenantId_Code",
                 schema: "dbo",
                 table: "Department",
-                column: "Code",
+                columns: new[] { "TenantId", "Code" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -240,17 +235,17 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                 column: "AccountingTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GLAccount_Code_Name",
-                schema: "dbo",
-                table: "GLAccount",
-                columns: new[] { "Code", "Name" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_GLAccount_PostableId",
                 schema: "dbo",
                 table: "GLAccount",
                 column: "PostableId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GLAccount_TenantId_Code_Name",
+                schema: "dbo",
+                table: "GLAccount",
+                columns: new[] { "TenantId", "Code", "Name" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_JournalEntry_DepartmentId",
@@ -277,10 +272,10 @@ namespace Tiny.Infrastructure.Migrations.Migrations
                 column: "JournalEntryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_Code",
+                name: "IX_User_TenantId_Code",
                 schema: "dbo",
                 table: "User",
-                column: "Code",
+                columns: new[] { "TenantId", "Code" },
                 unique: true);
         }
 
