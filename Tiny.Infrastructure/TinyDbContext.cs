@@ -50,9 +50,9 @@ public partial class TinyDbContext : MultiTenantApplicationDbContext, IUnitOfWor
         configurationBuilder.SetPreconventions();
     }
 
-    private IReadOnlyList<EntityEntry<Entity>> GetAllEntityEntiriesWithDomainEvents()
+    private IReadOnlyList<EntityEntry<IHasDomainEvents>> GetAllEntityEntiriesWithDomainEvents()
     {
-        return ChangeTracker.Entries<Entity>()
+        return ChangeTracker.Entries<IHasDomainEvents>()
             .Where(entry => entry.Entity.DomainEvents.Any())
             .ToList()
             .AsReadOnly();

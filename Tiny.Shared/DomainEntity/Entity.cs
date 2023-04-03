@@ -2,7 +2,7 @@ using Tiny.Shared.DomainEvent;
 
 namespace Tiny.Shared.DomainEntity;
 
-public abstract class Entity
+public abstract class Entity : IHasDomainEvents
 {
     private int? _requestedHashCode;
     private readonly List<IDomainEvent> _domainEvents = new();
