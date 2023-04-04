@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 using Tiny.Infrastructure.Abstract.MultiTenant;
@@ -9,7 +10,7 @@ namespace Tiny.Infrastructure;
 
 public static class ConfigureServiceContainer
 {
-    public static IServiceCollection AddServices(this IServiceCollection services)
+    public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<TinyDbContext>();
 
@@ -25,8 +26,13 @@ public static class ConfigureServiceContainer
             config.AddBehavior(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
         });
 
-        services.AddScoped<IMultiTenantStore<TenantInfo>, MultiTenantStore>();
-        services.AddScoped<IMultiTenantService, MultiTenantService>();
+        var tenantManageDbConnectionString = configuration.GetConnectionString("TenantManage");
+        services.AddMultiTenantServices<MultiTenantService, TinyMultiTenantContext, TinyMultiTenantStore, TenantInfo>()
+                .AddDbContextOption(options=> options.UseSqlServer(tenantManageDbConnectionString, settings =>
+                {
+                    settings.MigrationsAssembly(DbContextMigrationAssembly.Name);
+                }))
+                .Build();
 
         return services;
     }

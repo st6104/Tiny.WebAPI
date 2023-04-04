@@ -27,8 +27,4 @@
     <ProjectReference Include="..\Tiny.Infrastructure\Tiny.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
 </Project>

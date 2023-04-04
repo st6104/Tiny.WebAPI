@@ -7,8 +7,11 @@ namespace Tiny.Infrastructure.Abstract.MultiTenant;
 public interface IMultiTenantStore<T> where T : class, ITenantInfo
 {
     Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default);
-    Task<bool> TryGetByIdAsync(string id, out T tenantInfo, CancellationToken cancellationToken = default);
-    //Task<bool> TryAddAsync(T tenantInfo);
-    //Task<bool> TryUpdateAsync(T tenantInfo);
+    Task<T?> TryGetByIdAsync(string id, CancellationToken cancellationToken = default);
+    Task<bool> TryAddAsync(T tenantInfo, CancellationToken cancellationToken = default);
+    Task<bool> TryChangeName(string id, string name, CancellationToken cancellationToken = default);
+    Task<bool> TryChangeConnectionString(string id, string connectionString, CancellationToken cancellationToken = default);
     //Task<bool> TryRemoveByIdAsync(string id);
+    Task ActiveTenantAsync(string id, CancellationToken cancellationToken = default);
+    Task InactiveTenantAsync(string id, CancellationToken cancellationToken = default);
 }

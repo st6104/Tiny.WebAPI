@@ -15,7 +15,6 @@ namespace Tiny.Infrastructure;
 public partial class TinyDbContext : MultiTenantApplicationDbContext, IUnitOfWork, IDomainEventStore
 {
     public const string DefaultSchema = "dbo";
-    private const string MigrationAssembly = "Tiny.Infrastructure.Migrations";
     private const int RetryCount = 3;
 
     private readonly IMediator _mediator;
@@ -42,7 +41,7 @@ public partial class TinyDbContext : MultiTenantApplicationDbContext, IUnitOfWor
     protected override void ActionSqlServerOptions(SqlServerDbContextOptionsBuilder builder)
     {
         builder.EnableRetryOnFailure(RetryCount, TimeSpan.FromSeconds(5), null);
-        builder.MigrationsAssembly(MigrationAssembly);
+        builder.MigrationsAssembly(DbContextMigrationAssembly.Name);
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)

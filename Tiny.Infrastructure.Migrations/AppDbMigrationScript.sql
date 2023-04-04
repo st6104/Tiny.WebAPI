@@ -160,7 +160,7 @@ CREATE UNIQUE INDEX [IX_User_TenantId_Code] ON [dbo].[User] ([TenantId], [Code])
 GO
 
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20230403084210_Initial', N'7.0.4');
+VALUES (N'20230404071443_Initial', N'7.0.4');
 GO
 
 COMMIT;

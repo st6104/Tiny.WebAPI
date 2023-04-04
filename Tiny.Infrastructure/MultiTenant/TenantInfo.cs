@@ -8,16 +8,39 @@ namespace Tiny.Infrastructure.MultiTenant;
 
 public class TenantInfo : ITenantInfo
 {
-    public TenantInfo(string id, string name, string connectionString)
+    public TenantInfo(string id, string name, string connectionString, bool isActive)
     {
         Id = id;
         Name = name;
         ConnectionString = connectionString;
+        IsActive = isActive;
     }
 
-    public string Id { get; }
+    public string Id { get; private set; }
 
-    public string Name { get; }
+    public string Name { get; private set; }
 
-    public string ConnectionString { get; }
+    public string ConnectionString { get; private set; }
+
+    public bool IsActive { get; private set; }
+
+    public void ChangeName(string name)
+    {
+        Name = name;
+    }
+
+    public void ChangeConnectionString(string connectionString)
+    {
+        ConnectionString = connectionString;
+    }
+
+    public void Active()
+    {
+        IsActive = true;
+    }
+
+    public void Inactive()
+    {
+        IsActive = false;
+    }
 }

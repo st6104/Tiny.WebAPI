@@ -9,10 +9,10 @@ using Tiny.Infrastructure;
 
 #nullable disable
 
-namespace Tiny.Infrastructure.Migrations.Migrations
+namespace Tiny.Infrastructure.Migrations.AppDbMigrations
 {
     [DbContext(typeof(TinyDbContext))]
-    [Migration("20230403084210_Initial")]
+    [Migration("20230404071443_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

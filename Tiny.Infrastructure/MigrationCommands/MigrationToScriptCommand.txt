@@ -1,1 +1,11 @@
-﻿dotnet ef migrations script -p ../Tiny.Infrastructure.Migrations -o ../Tiny.Infrastructure.Migrations/MigrationScript.sql
+﻿마이그레이션 전 마이그레이선 어셈블리 프로젝트(Tiny.Infrastructure.Migrations)를 최신버전으로 빌드 후 
+현재 프로젝트의 bin 디렉토리에 배포모드(Release/Debug)에 맞는 폴더에 어셈블리를 복사한 후 아래의 명령어를 실행
+※ 현재는 어셈블리 프로젝트(Tiny.Infrastructure.Migrations)를 빌드하면 현재 프로젝트(Tiny.Infrastructure)의 bin 폴더에 dll이 생성되도록 해놓았음
+
+dotnet ef migrations script -p ../Tiny.Infrastructure.Migrations -o ../Tiny.Infrastructure.Migrations/MigrationScript.sql
+
+1. ApplictionDbContext Migration
+ dotnet ef migrations script -c TinyDbContext -p ../Tiny.Infrastructure.Migrations -o ../Tiny.Infrastructure.Migrations/AppDbMigrationScript.sql
+
+2. TenantManagedDbContext Migration
+ dotnet ef migrations add <<MigrationName>> -c TinyMultiTenantContext -p ../Tiny.Infrastructure.Migrations -o TenantMngDbMigrations

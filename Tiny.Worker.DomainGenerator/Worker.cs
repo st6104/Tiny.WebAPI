@@ -37,8 +37,9 @@ internal class Worker : BackgroundService
                     }
                 }, stoppingToken);
             }
-            catch(Exception ex) 
+            catch
             {
+                throw;
             }
         }
     }

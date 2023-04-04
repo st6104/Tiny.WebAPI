@@ -8,7 +8,7 @@ using Tiny.Infrastructure;
 
 #nullable disable
 
-namespace Tiny.Infrastructure.Migrations.Migrations
+namespace Tiny.Infrastructure.Migrations.AppDbMigrations
 {
     [DbContext(typeof(TinyDbContext))]
     partial class TinyDbContextModelSnapshot : ModelSnapshot

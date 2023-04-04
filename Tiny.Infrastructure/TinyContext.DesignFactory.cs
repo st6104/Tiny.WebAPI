@@ -22,6 +22,27 @@ public class TinyContextDesignFactory : IDesignTimeDbContextFactory<TinyDbContex
             public string Name => string.Empty;
 
             public string ConnectionString => string.Empty;
+
+            public bool IsActive => true;
+            public void ChangeName(string name)
+            {
+                
+            }
+
+            public void ChangeConnectionString(string connectionString)
+            {
+               
+            }
+
+            public void Active()
+            {
+                
+            }
+
+            public void Inactive()
+            {
+
+            }
         }
     }
 

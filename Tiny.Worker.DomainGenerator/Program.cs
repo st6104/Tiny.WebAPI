@@ -11,7 +11,7 @@ var host = Host.CreateDefaultBuilder(args)
 
         services.AddSingleton(dbConnectionOption);
 
-        Tiny.Infrastructure.ConfigureServiceContainer.AddServices(services);
+        Tiny.Infrastructure.ConfigureServiceContainer.AddServices(services,hostContext.Configuration);
         services.AddScoped<IGenerateGLAccountTask, GenerateGLAccountTask>();
         services.AddHostedService<Worker>();
     })

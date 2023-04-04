@@ -13,18 +13,23 @@ public class MultiTenantMiddleware
         this._next = next;
     }
 
-    public async Task InvokeAsync(HttpContext httpContext, IMultiTenantStore<TenantInfo> tenantStore, IMultiTenantService multiTenantService)
+    public async Task InvokeAsync(HttpContext httpContext, IMultiTenantStore<TenantInfo> tenantStore,
+        IMultiTenantService multiTenantService)
     {
         var tenantId = httpContext.Request.Headers[CustomRequestHeader.TenantId].FirstOrDefault() ?? string.Empty;
 
-        if (!string.IsNullOrWhiteSpace(tenantId) && await tenantStore.TryGetByIdAsync(tenantId, out var tenantInfo))
+        if (string.IsNullOrWhiteSpace(tenantId))
         {
-            multiTenantService.Current = tenantInfo;
-            await _next(httpContext);
+            //TODO : TenantId 헤더 정보가 없을때 오류 작성(Exception 신규 추가 http상태코드는 400) ex:기존 유효성검증과 상태코드가 겹치는 문제를 고민..
         }
-        else
+
+        var tenantInfo = await tenantStore.TryGetByIdAsync(tenantId) ?? throw new TenantNotFoundException(tenantId);
+        if (!tenantInfo.IsActive)
         {
-            throw new TenantNotFoundException(tenantId, $"Can not found Tenant Id({tenantId}).");
+            //TODO : Tenant가 Inactive 일 때 오류작성 
         }
+
+        multiTenantService.Current = tenantInfo!;
+        await _next(httpContext);
     }
 }

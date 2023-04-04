@@ -6,11 +6,17 @@ namespace Tiny.Infrastructure.Abstract.Exceptions;
 
 public sealed class TenantNotFoundException : Exception
 {
+    private readonly bool _isAssignedMessage;
+    public string TenantId { get; }
+
+    public override string Message => _isAssignedMessage ? base.Message : $"Can not found Tenant Id({TenantId})."; 
+    
     public TenantNotFoundException(string tenantId, string? message = null, Exception? innerException = null) : base(
         message, innerException)
     {
         TenantId = tenantId;
+        _isAssignedMessage = !string.IsNullOrWhiteSpace(message);
     }
 
-    public string TenantId { get; }
+    
 }

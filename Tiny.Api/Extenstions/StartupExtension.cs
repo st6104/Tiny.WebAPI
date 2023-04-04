@@ -18,7 +18,7 @@ internal static class StartupExtension
             config.OperationFilter<TenantHeaderSwaggerAttribute>();
             config.AddSwaggerXmlDocuments();
         });
-        builder.Services.AddAssemblyServices();
+        builder.Services.AddAssemblyServices(builder.Configuration);
 
         return builder;
     }
@@ -59,10 +59,10 @@ internal static class StartupExtension
         return app;
     }
 
-    private static IServiceCollection AddAssemblyServices(this IServiceCollection services)
+    private static IServiceCollection AddAssemblyServices(this IServiceCollection services, IConfiguration configuration)
     {
         Application.ConfigureServiceContainer.AddServices(services);
-        Infrastructure.ConfigureServiceContainer.AddServices(services);
+        Infrastructure.ConfigureServiceContainer.AddServices(services, configuration);
         Api.ConfigureServiceContainer.AddServices(services);
 
         return services;

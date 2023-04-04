@@ -2,7 +2,13 @@ namespace Tiny.Infrastructure.Abstract.MultiTenant;
 
 public interface ITenantInfo
 {
-    public string Id { get; }
-    public string Name { get; }
-    public string ConnectionString { get; }
+    string Id { get; }
+    string Name { get; }
+    string ConnectionString { get; }
+    bool IsActive { get; }
+
+    void ChangeName(string name);
+    void ChangeConnectionString(string connectionString);
+    void Active();
+    void Inactive();
 }

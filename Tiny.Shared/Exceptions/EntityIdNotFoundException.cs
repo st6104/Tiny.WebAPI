@@ -5,16 +5,16 @@ namespace Tiny.Shared.Exceptions;
 /// </summary>
 public sealed class EntityIdNotFoundException : Exception
 {
-    private readonly bool _assginedMessage;
+    private readonly bool _isAssginedMessage;
     
     public long FailedId { get; }
-    public override string Message => _assginedMessage ? base.Message : $"EntityId({FailedId}) Not Found";
+    public override string Message => _isAssginedMessage ? base.Message : $"EntityId({FailedId}) Not Found";
 
 
     public EntityIdNotFoundException(long failedId, string? message = null, Exception? innerException = null) : base(
         message, innerException)
     {
         FailedId = failedId;
-        _assginedMessage = !string.IsNullOrWhiteSpace(message);
+        _isAssginedMessage = !string.IsNullOrWhiteSpace(message);
     }
 }

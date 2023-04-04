@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace Tiny.Infrastructure.Migrations.Migrations
+namespace Tiny.Infrastructure.Migrations.AppDbMigrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration
