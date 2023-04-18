@@ -1,8 +1,8 @@
-using System.Data.SqlTypes;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Tiny.Api.Conventions;
 using Tiny.Api.Middlewares;
 using Tiny.Api.OperationFilters;
+using Tiny.MultiTenant.Extensions;
 
 namespace Tiny.Api.Extenstions;
 
@@ -26,18 +26,15 @@ internal static class StartupExtension
     public static WebApplication ConfigureServices(this WebApplication app)
     {
         // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
+        //if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
             app.UseSwaggerUI();
         }
 
         app.UseHttpsRedirection();
-
         app.UseAuthorization();
-
         app.UseMiddlewares();
-
         app.MapControllers();
 
         return app;
@@ -51,19 +48,17 @@ internal static class StartupExtension
         config.IncludeXmlComments(apiXml, true);
     }
 
-    private static WebApplication UseMiddlewares(this WebApplication app)
+    private static IApplicationBuilder UseMiddlewares(this IApplicationBuilder app)
     {
-        app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
-        app.UseMiddleware<MultiTenantMiddleware>();
-
-        return app;
+        return app.UseMiddleware<GlobalExceptionHandlingMiddleware>()
+                    .UseMultiTenantMiddleware(CustomRequestHeader.TenantId);
     }
 
     private static IServiceCollection AddAssemblyServices(this IServiceCollection services, IConfiguration configuration)
     {
         Application.ConfigureServiceContainer.AddServices(services);
         Infrastructure.ConfigureServiceContainer.AddServices(services, configuration);
-        Api.ConfigureServiceContainer.AddServices(services);
+        ConfigureServiceContainer.AddServices(services);
 
         return services;
     }

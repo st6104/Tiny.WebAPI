@@ -1,6 +1,6 @@
 using FluentValidation;
 using Tiny.Api.Extenstions;
-using Tiny.Infrastructure.Abstract.Exceptions;
+using Tiny.MultiTenant.Exceptions;
 using Tiny.Shared.Exceptions;
 
 namespace Tiny.Api.Middlewares;

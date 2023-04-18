@@ -8,13 +8,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tiny.Infrastructure.Abstract.MultiTenant;
+using Tiny.MultiTenant.DbContexts;
 
 namespace Tiny.Infrastructure.MultiTenant;
 public class TinyMultiTenantContext : MultiTenantManagerDbContext<TenantInfo>
 {
     public override DbSet<TenantInfo> TenantInfo => Set<TenantInfo>();
 
-    public TinyMultiTenantContext(DbContextOptions options) : base(options)
+    public TinyMultiTenantContext(DbContextOptions<TinyMultiTenantContext> options) : base(options)
     {
     }
 }

@@ -1,10 +1,11 @@
 using Microsoft.Extensions.Logging;
+using Tiny.Application.Abstract.Handlers;
 using Tiny.Shared.Extensions;
 
 namespace Tiny.Infrastructure.Behaviors;
 
 public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IRequest<TResponse>
+    where TRequest : ICommandRequest<TResponse>
 {
     private readonly TinyDbContext _dbDbContext;
     private readonly ILogger<TransactionBehavior<TRequest, TResponse>> _logger;

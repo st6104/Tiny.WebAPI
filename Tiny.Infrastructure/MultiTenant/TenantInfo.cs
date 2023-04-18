@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Tiny.Infrastructure.Abstract.MultiTenant;
+using Tiny.MultiTenant.Interfaces;
 
 namespace Tiny.Infrastructure.MultiTenant;
 

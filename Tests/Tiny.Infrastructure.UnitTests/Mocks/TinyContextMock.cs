@@ -4,6 +4,7 @@ using MockQueryable.FakeItEasy;
 using Tiny.Domain.AggregateModels.GLAccountAggregate;
 using Tiny.Domain.AggregateModels.JournalEntryAggregate;
 using Tiny.Infrastructure.Abstract.MultiTenant;
+using Tiny.MultiTenant.Interfaces;
 using UnitTest.Common;
 
 namespace Tiny.Infrastructure.UnitTests.Mocks;

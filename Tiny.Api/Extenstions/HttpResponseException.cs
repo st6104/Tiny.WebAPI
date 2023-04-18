@@ -5,7 +5,7 @@
 using System.Net;
 using FluentValidation;
 using Tiny.Api.ResponseObjects;
-using Tiny.Infrastructure.Abstract.Exceptions;
+using Tiny.MultiTenant.Exceptions;
 using Tiny.Shared.Exceptions;
 
 namespace Tiny.Api.Extenstions;

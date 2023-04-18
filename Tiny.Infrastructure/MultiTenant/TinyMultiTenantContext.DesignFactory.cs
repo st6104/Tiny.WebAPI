@@ -10,7 +10,7 @@ public class TinyMultiTenantContextDesignFactory : IDesignTimeDbContextFactory<T
 {
     public TinyMultiTenantContext CreateDbContext(string[] args)
     {
-        var optionsBuilder = new DbContextOptionsBuilder().UseSqlServer(string.Empty, settings =>
+        var optionsBuilder = new DbContextOptionsBuilder<TinyMultiTenantContext>().UseSqlServer(string.Empty, settings =>
         {
             settings.MigrationsAssembly(DbContextMigrationAssembly.Name);
         });

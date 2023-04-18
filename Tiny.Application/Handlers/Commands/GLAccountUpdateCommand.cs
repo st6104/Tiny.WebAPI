@@ -6,7 +6,7 @@ using Tiny.Domain.AggregateModels.GLAccountAggregate.Specifications;
 
 namespace Tiny.Application.Handlers.Commands;
 
-public record GLAccountUpdateCommand(long Id, string Code, string Name, decimal Balance) : IRequest<GLAccountViewModel>;
+public record GLAccountUpdateCommand(long Id, string Code, string Name, decimal Balance) : ICommandRequest<GLAccountViewModel>;
 
 public class GLAcountUpdateCommandHandler : IRequestHandler<GLAccountUpdateCommand, GLAccountViewModel>
 {

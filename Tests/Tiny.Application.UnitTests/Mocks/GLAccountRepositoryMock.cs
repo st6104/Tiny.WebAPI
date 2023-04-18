@@ -12,7 +12,7 @@ internal static class GLAccountRepositoryMock
         var firstGLAccount = glAccounts.First();
         var mock = new Mock<IGLAccountRepository>();
         mock.Setup(x => x.GetOneAsync(It.IsAny<GLAccountByIdSpec>(), default)).ReturnsAsync(firstGLAccount);
-        mock.Setup(x => x.GetAllAsync(default)).ReturnsAsync(glAccounts);
+        mock.Setup(x => x.GetAll(default)).Returns(glAccounts.AsQueryable());
         mock.Setup(x => x.AddAsync(It.IsAny<GLAccount>(), default)).Callback(() => { });
         mock.Setup(x => x.UpdateAsync(It.IsAny<GLAccount>(), default)).Callback(() => { });
         mock.Setup(x => x.DeleteAsync(It.IsAny<long>(), default)).Callback(() => { });

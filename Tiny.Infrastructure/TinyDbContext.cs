@@ -1,11 +1,11 @@
 using System.Data;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
-using Tiny.Infrastructure.Abstract.MultiTenant;
 using Tiny.Infrastructure.Exceptions;
 using Tiny.Infrastructure.Extensions;
+using Tiny.MultiTenant.DbContexts;
+using Tiny.MultiTenant.Interfaces;
 using Tiny.Shared.DomainEntity;
 using Tiny.Shared.DomainEvent;
 using Tiny.Shared.Repository;
@@ -20,7 +20,8 @@ public partial class TinyDbContext : MultiTenantApplicationDbContext, IUnitOfWor
     private readonly IMediator _mediator;
     private IDbContextTransaction? _currentTransaction;
 
-    public TinyDbContext(IMediator mediator, ILoggerFactory loggerFactory, IMultiTenantService multiTanentService) : base(multiTanentService, loggerFactory)
+    public TinyDbContext(IMediator mediator, ILoggerFactory loggerFactory, IMultiTenantService multiTanentService,
+        IMultiTenantSettings multiTenantSettings) : base(multiTanentService, loggerFactory, multiTenantSettings)
     {
         _mediator = mediator;
     }
@@ -38,10 +39,15 @@ public partial class TinyDbContext : MultiTenantApplicationDbContext, IUnitOfWor
 
     #endregion
 
-    protected override void ActionSqlServerOptions(SqlServerDbContextOptionsBuilder builder)
+    protected override void OnUseDatabase(DbContextOptionsBuilder optionsBuilder, string connectionString)
     {
-        builder.EnableRetryOnFailure(RetryCount, TimeSpan.FromSeconds(5), null);
-        builder.MigrationsAssembly(DbContextMigrationAssembly.Name);
+        optionsBuilder.UseSqlServer(connectionString, settings =>
+        {
+            settings.EnableRetryOnFailure(RetryCount, TimeSpan.FromSeconds(5), null);
+            settings.MigrationsAssembly(DbContextMigrationAssembly.Name);
+            settings.MaxBatchSize(1000);
+        });
+        optionsBuilder.EnableSensitiveDataLogging();
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -51,10 +57,22 @@ public partial class TinyDbContext : MultiTenantApplicationDbContext, IUnitOfWor
 
     private IReadOnlyList<EntityEntry<IHasDomainEvents>> GetAllEntityEntiriesWithDomainEvents()
     {
-        return ChangeTracker.Entries<IHasDomainEvents>()
-            .Where(entry => entry.Entity.DomainEvents.Any())
-            .ToList()
-            .AsReadOnly();
+        return FilteringEntriesHasDomainEvents(ChangeTracker.Entries<IHasDomainEvents>());
+    }
+
+    private  List<EntityEntry<IHasDomainEvents>> FilteringEntriesHasDomainEvents(
+        IEnumerable<EntityEntry<IHasDomainEvents>> entityEntries)
+    {
+        var entriesAsArray = entityEntries.ToArray();
+        var entityEntriesAsDomainEvents = new List<EntityEntry<IHasDomainEvents>>(entriesAsArray.Length);
+        foreach (var entityEntry in entriesAsArray)
+        {
+            if(entityEntry.Entity.DomainEvents.Any())
+                entityEntriesAsDomainEvents.Add(entityEntry);
+        }
+        
+        entityEntriesAsDomainEvents.TrimExcess();
+        return entityEntriesAsDomainEvents;
     }
 
     public async Task<IDbContextTransaction> BeginTransactionAsync()

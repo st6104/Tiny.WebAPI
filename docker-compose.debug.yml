@@ -3,19 +3,28 @@
 version: '3.8'
 
 services:
-  tinyDb:
-    container_name: "tiny.db"
+  tiny-sqlserver:
+    container_name: "tiny-database"
     image: "mcr.microsoft.com/mssql/server:2019-latest"
-    hostname: "tinydb"
+    hostname: "tiny-database"
     ports:
       - 1433:1433
     environment:
-       - ACCEPT_EULA=Y
-       - MSSQL_SA_PASSWORD=wnsdlf83!!
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=wnsdlf83!!
     volumes:
-       - ..\Tiny.Db\data:/var/opt/mssql/data
-       - ..\Tiny.Db\log:/var/opt/mssql/log
-       - ..\Tiny.Db\secrets:/var/opt/mssql/secrets
+      - ..\Tiny.Db\data:/var/opt/mssql/data
+      - ..\Tiny.Db\log:/var/opt/mssql/log
+      - ..\Tiny.Db\secrets:/var/opt/mssql/secrets
+
+  tiny-redis:
+    container_name: "tiny-redis"
+    image: "redis:latest"
+    hostname: "tiny-redis"
+    ports:
+      - "6379:6379"
+    volumes:
+      - ..\Tiny.Db\redis-data:/data
 
   tinyapi:
     container_name: "tiny.webapi"

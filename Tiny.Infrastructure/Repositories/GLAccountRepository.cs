@@ -1,6 +1,7 @@
 using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
 using Tiny.Domain.AggregateModels.GLAccountAggregate;
+using Tiny.Domain.AggregateModels.GLAccountAggregate.Events;
 using Tiny.Domain.AggregateModels.GLAccountAggregate.Specifications;
 using Tiny.Shared.Exceptions;
 using Tiny.Shared.Repository;
@@ -9,37 +10,50 @@ namespace Tiny.Infrastructure.Repositories;
 
 public class GLAccountRepository : IGLAccountRepository
 {
-    private readonly TinyDbContext _dbDbContext;
+    private readonly TinyDbContext _dbContext;
 
-    public GLAccountRepository(TinyDbContext dbDbContext)
+    public GLAccountRepository(TinyDbContext dbContext)
     {
-        _dbDbContext = dbDbContext;
+        _dbContext = dbContext;
     }
 
-    public IUnitOfWork UnitOfWork => _dbDbContext;
+    public IUnitOfWork UnitOfWork => _dbContext;
 
     public async Task AddAsync(GLAccount glAccount, CancellationToken cancellationToken)
     {
-        await _dbDbContext.AddAsync(glAccount, cancellationToken);
+        await _dbContext.AddAsync(glAccount, cancellationToken);
+        //glAccount.AddDomainEvent(new GLAccountAddedDomainEvent(glAccount));
     }
 
     public async Task UpdateAsync(GLAccount glAccount, CancellationToken cancellationToken)
     {
         await Task.Run(() =>
         {
-            _dbDbContext.GLAccount.Attach(glAccount).State = EntityState.Modified;
+            _dbContext.GLAccount.Attach(glAccount).State = EntityState.Modified;
         }, cancellationToken);
     }
 
     public async Task DeleteAsync(long id, CancellationToken cancellationToken)
     {
         var glAccount = await GetOneAsync(new GLAccountByIdSpec(id), cancellationToken);
-        glAccount.TryMarkAsDelete();
+        //glAccount.TryMarkAsDelete();
     }
 
-    public async Task<IReadOnlyList<GLAccount>> GetAllAsync(CancellationToken cancellationToken)
+    public IQueryable<GLAccount> GetAll(CancellationToken cancellationToken)
     {
-        return await GetCore(null).ToListAsync(cancellationToken);
+        return GetCore(null).AsQueryable();
+        //return await query.ToListAsync(cancellationToken);
+    }
+
+    public IQueryable<GLAccount> GetTopN(int queryCount, int skipCount,
+        CancellationToken cancellationToken)
+    {
+        //_dbContext.GLAccount.OrderBy(x=>x.Id).Take(skipCount)
+        
+        var lastGLAccountId = GetCore(new GetLastGLAccountIdTakeBy(skipCount)).Select(x => x.Id)
+            .LastOrDefault();
+
+        return GetCore(new GetLastGLAccountIdTakeBy(queryCount, lastGLAccountId)).AsQueryable();
     }
 
     public async Task<GLAccount> GetOneAsync(GLAccountByIdSpec spec, CancellationToken cancellationToken)
@@ -48,14 +62,14 @@ public class GLAccountRepository : IGLAccountRepository
         return glAccount ?? throw new EntityIdNotFoundException(spec.Id);
     }
 
-    public Task<bool> IsSatisfiedByAsync(ISpecification<GLAccount> specification, CancellationToken cancellationToken)
+    public async Task<bool> IsSatisfiedByAsync(ISpecification<GLAccount> specification, CancellationToken cancellationToken)
     {
-        return _dbDbContext.GLAccount.WithSpecification(specification).AnyAsync(cancellationToken);
+        return await _dbContext.GLAccount.WithSpecification(specification).AnyAsync(cancellationToken);
     }
 
     public IQueryable<GLAccount> GetCore(ISpecification<GLAccount>? spec)
     {
-        var query = _dbDbContext.GLAccount.AsQueryable();
+        var query = _dbContext.GLAccount.AsNoTracking();
 
         if (spec != null)
         {

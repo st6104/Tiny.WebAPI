@@ -21,6 +21,8 @@ public static class ConfigureServiceContainer
 
         services.AddValidatorsFromAssemblyContaining<MarkedAssemlbyClass>();
 
+        services.AddMemoryCache();
+
         return services;
     }
 }

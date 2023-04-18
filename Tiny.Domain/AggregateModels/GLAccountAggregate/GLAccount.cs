@@ -97,7 +97,7 @@ public class GLAccount : SoftDeletableEntity, IAggregateRoot
         var markedSuccessed = base.TryMarkAsDelete();
         if (markedSuccessed)
             AddDomainEvent(new GLAccountDeletedDomainEvent(this));
-
+    
         return markedSuccessed;
     }
 }

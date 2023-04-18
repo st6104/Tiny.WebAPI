@@ -33,9 +33,17 @@ public class GLAccountController : ControllerBase
 
     [HttpGet]
     [ProducesResponseTypeFor<IReadOnlyList<GLAccountViewModel>>(RequestAction.GetMany)]
-    public async Task<ActionResult> GetManyAsync(CancellationToken cancellationToken)
+    public async Task<ActionResult> GetManyTopNAsync(int queryCount, int skipCount, CancellationToken cancellationToken)
     {
-        var glAccounts = await _mediator.Send(new GLAccountGetManyQuery(), cancellationToken);
+        var glAccounts = await _mediator.Send(new GLAccountGetTopNQuery(queryCount, skipCount), cancellationToken);
+        return Ok(glAccounts);
+    }
+
+    [HttpGet("All")]
+    [ProducesResponseTypeFor<IReadOnlyList<GLAccountViewModel>>(RequestAction.GetMany)]
+    public async Task<ActionResult> GetAllAsync(CancellationToken cancellationToken)
+    {
+        var glAccounts = await _mediator.Send(new GLAccountGetAllQuery(), cancellationToken);
         return Ok(glAccounts);
     }
 

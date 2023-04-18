@@ -17,14 +17,17 @@
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.4" />
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.4" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
         <PackageReference Include="Scrutor" Version="4.2.1" />
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Tiny.Application.Abstract\Tiny.Application.Abstract.csproj" />
         <ProjectReference Include="..\Tiny.Domain\Tiny.Domain.csproj" />
         <ProjectReference Include="..\Tiny.Infrastructure.Abstract.cs\Tiny.Infrastructure.Abstract.csproj" />
+        <ProjectReference Include="..\Tiny.MultiTenant\Tiny.MultiTenant.csproj" />
         <ProjectReference Include="..\Tiny.Shared\Tiny.Shared.csproj" />
         <ProjectReference Include="..\Tiny.Application\Tiny.Application.csproj" />
     </ItemGroup>

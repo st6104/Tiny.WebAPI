@@ -4,7 +4,7 @@ using Tiny.Shared.Extensions;
 
 namespace Tiny.Application.Bahaviors;
 
-public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : ICommandRequest<TResponse>
 {
     private readonly ILogger<ValidationBehavior<TRequest, TResponse>> _logger;
     private readonly IEnumerable<IValidator<TRequest>> _validators;

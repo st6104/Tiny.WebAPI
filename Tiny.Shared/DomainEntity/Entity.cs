@@ -5,10 +5,10 @@ namespace Tiny.Shared.DomainEntity;
 public abstract class Entity : IHasDomainEvents
 {
     private int? _requestedHashCode;
-    private readonly List<IDomainEvent> _domainEvents = new();
+    private List<IDomainEvent> _domainEvents = new();
 
     public virtual long Id { get; protected set; }
-    public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+    public IReadOnlyList<IDomainEvent> DomainEvents =>  _domainEvents.ToList().AsReadOnly();
 
     public void AddDomainEvent(IDomainEvent domainEvent) => _domainEvents.Add(domainEvent);
     public void RemoveDomainEvent(IDomainEvent domainEvent) => _domainEvents.Remove(domainEvent);
@@ -47,7 +47,7 @@ public abstract class Entity : IHasDomainEvents
 
         return _requestedHashCode.Value;
     }
-
+    
     public static bool operator ==(Entity left, Entity right)
     {
         if (object.Equals(left, null))

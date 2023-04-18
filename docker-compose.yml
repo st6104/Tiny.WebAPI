@@ -3,10 +3,10 @@
 version: '3.8'
 
 services:
-  tinyDb:
-    container_name: "tiny.db"
-    image: "mcr.microsoft.com/mssql/server:2019-lastest"
-    hostname: "tinydb"
+  tiny-sqlserver:
+    container_name: "tiny-database"
+    image: "mcr.microsoft.com/mssql/server:2019-latest"
+    hostname: "tiny-database"
     ports:
       - 1433:1433
     environment:
@@ -17,13 +17,11 @@ services:
        - ..\Tiny.Db\log:/var/opt/mssql/log
        - ..\Tiny.Db\secrets:/var/opt/mssql/secrets
 
-  tinyapi:
-    container_name: "tiny.webapi"
-    image: "tinyapi:lastest"    
+  tiny-redis:
+    container_name: "tiny-redis"
+    image: "redis:latest"
+    hostname: "tiny-redis"
     ports:
-      - 8099:8099
-    environment:
-      - ASPNETCORE_URLS=http://+:8099
-      - ConnectionStrings:Tiny=server=tinydb;database=TinyWebJournal;user id=sa;password=wnsdlf83!!
+      - "6379:6379"
     volumes:
-      - ~/.vsdbg:/remote_debugger:rw
+      - ..\Tiny.Db\redis-data:/data

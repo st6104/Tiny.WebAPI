@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tiny.Domain.AggregateModels.GLAccountAggregate;
-using Tiny.Infrastructure.Abstract.EntityTypeConfigure;
+using Tiny.MultiTenant.EntityTypeConfigure;
 
 namespace Tiny.Infrastructure.EntityConfigurations;
 

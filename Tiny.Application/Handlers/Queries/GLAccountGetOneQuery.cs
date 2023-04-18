@@ -5,7 +5,7 @@ using Tiny.Domain.AggregateModels.GLAccountAggregate.Specifications;
 
 namespace Tiny.Application.Handlers.Queries;
 
-public record GLAccountGetOneQuery(long Id) : IRequest<GLAccountViewModel>;
+public record GLAccountGetOneQuery(long Id) : IQueryRequest<GLAccountViewModel>;
 
 public class GLAccountGetOneQueryHandler : IRequestHandler<GLAccountGetOneQuery, GLAccountViewModel>
 {

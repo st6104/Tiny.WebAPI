@@ -11,6 +11,10 @@
     <NoWarn>1701;1702;IL2121;CS1591</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <NoWarn>1701;1702;IL2121;CS1591;</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Ardalis.Result.AspNetCore" Version="7.0.0" />
     <PackageReference Include="Ardalis.Result.FluentValidation" Version="7.0.0" />
@@ -19,6 +23,7 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="System.Runtime.Caching" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>

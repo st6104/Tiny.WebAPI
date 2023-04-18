@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Logging;
-using Tiny.Infrastructure.Abstract.MultiTenant;
+using Tiny.MultiTenant.Interfaces;
 
 namespace Tiny.Infrastructure;
 
@@ -8,7 +8,16 @@ public class TinyContextDesignFactory : IDesignTimeDbContextFactory<TinyDbContex
 {
     public TinyDbContext CreateDbContext(string[] args)
     {
-        return new TinyDbContext(new FakeMediator(), new FakeLoggerFactory(), new FakeMultiTenant());
+        return new TinyDbContext(new FakeMediator(), new FakeLoggerFactory(), new FakeMultiTenant(),
+            new FakeMultiTenantSettings());
+    }
+
+    private class FakeMultiTenantSettings : IMultiTenantSettings
+    {
+        public string TenantIdFieldName { get; } = string.Empty;
+        public bool UseTenantIdField { get; } = true;
+        public Type MiddlewareType { get; } = null!;
+        public bool UseDistributedCache { get; } = false;
     }
 
     private class FakeMultiTenant : IMultiTenantService
@@ -24,24 +33,21 @@ public class TinyContextDesignFactory : IDesignTimeDbContextFactory<TinyDbContex
             public string ConnectionString => string.Empty;
 
             public bool IsActive => true;
+
             public void ChangeName(string name)
             {
-                
             }
 
             public void ChangeConnectionString(string connectionString)
             {
-               
             }
 
             public void Active()
             {
-                
             }
 
             public void Inactive()
             {
-
             }
         }
     }

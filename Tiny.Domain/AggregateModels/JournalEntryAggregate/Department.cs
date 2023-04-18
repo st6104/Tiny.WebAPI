@@ -1,3 +1,5 @@
+using Tiny.MultiTenant.Abstract.Interfaces;
+
 namespace Tiny.Domain.AggregateModels.JournalEntryAggregate;
 
 public class Department : SoftDeletableEntity, IHasTenantId

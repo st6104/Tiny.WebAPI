@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tiny.Domain.AggregateModels.JournalEntryAggregate;
-using Tiny.Infrastructure.Abstract.EntityTypeConfigure;
-using Tiny.Infrastructure.Abstract.Extensions;
+using Tiny.MultiTenant.EntityTypeConfigure;
+using Tiny.MultiTenant.Extensions;
 
 namespace Tiny.Infrastructure.EntityConfigurations;
 

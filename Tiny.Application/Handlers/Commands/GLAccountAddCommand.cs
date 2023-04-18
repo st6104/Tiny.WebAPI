@@ -10,7 +10,7 @@ namespace Tiny.Application.Handlers.Commands;
 /// <param name="Name">이름</param>
 /// <param name="PostableId">계정구분</param>
 /// <param name="AccountTypeId">계정체계</param>
-public record GLAccountAddCommand(string Code, string Name, int PostableId, int AccountTypeId) : IRequest<long>;
+public record GLAccountAddCommand(string Code, string Name, int PostableId, int AccountTypeId) : ICommandRequest<long>;
 
 public class GLAccountAddCommandHandler : IRequestHandler<GLAccountAddCommand, long>
 {
